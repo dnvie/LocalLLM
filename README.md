@@ -1,17 +1,25 @@
 # LocalLLM
 
 Interact with local LLM models running in Ollama with an easy to use and familiar UI, with the possiblity of switching models during a conversation.
+
 Home:
+
 ![image](https://github.com/user-attachments/assets/7283eb08-8714-4b96-8bfc-ec4aee409708)
+
 Switching models during a conversation (+markdown and math-mode support):
+
 ![image](https://github.com/user-attachments/assets/cbf90518-0b2a-4896-bc81-954bab6bc6aa)
+
 Model Switcher:
+
 ![image](https://github.com/user-attachments/assets/f436ff2f-b11f-4776-9db4-6fe17700dbbc)
 
 
 
 
 ---
+
+# How to run
 
 You need to have a local Ollama server running to use this!
 Run Ollama with ```OLLAMA_HOST=0.0.0.0 ollama serve```
