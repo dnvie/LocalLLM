@@ -1,0 +1,67 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+  --width: 700px;
+}
+
+[data-theme="light"] {
+  --factor: 1;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+}
+
+strong {
+  font-weight: 600;
+}
+
+p {
+  margin: 0;
+}
+
+code {
+  font-family: "Akkurat-Mono";
+  font-size: 14px;
+  letter-spacing: initial !important;
+  line-height: 10px !important;
+}
+
+.material-symbols-rounded {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 300,
+    "GRAD" 0,
+    "opsz" 20;
+}
+
+.material-symbols-rounded-bold {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 20;
+}
+
+.markdown-clipboard-button {
+  background-color: #ffffff;
+  border: 0.5px solid #dfdfdf;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-family: "Inter Display";
+  font-size: 13px;
+  letter-spacing: -0.25px;
+  font-weight: 500;
+}
+
+.markdown-clipboard-button:hover {
+  background-color: #f4f4f4;
+  cursor: pointer;
+}
+
+.tr {
+  transition: all 0.15s cubic-bezier(0.74, -0.01, 0.26, 1.04);
+}

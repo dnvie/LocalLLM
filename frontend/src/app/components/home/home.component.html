@@ -1,0 +1,44 @@
+<div class="frame">
+  <div class="modelSelectorContainer">
+    <app-sidebar-collapse-button></app-sidebar-collapse-button>
+    <app-model-selector></app-model-selector>
+  </div>
+  <div class="content" (click)="reveal()">
+    <div class="contentFrame">
+      <div class="greetingContainer">
+        <div class="line topLine">
+          <div class="unrevealed rvItem" id="1">Hi,</div>
+          <div class="unrevealed rvItem" id="2">I'm</div>
+          <div class="modelName unrevealed rvItem" id="3">
+            {{
+              selectedModel!.name_trimmed.substring(0, 1).toUpperCase() +
+                selectedModel!.name_trimmed.substring(1)
+            }}
+          </div>
+          <div class="unrevealed rvItem" id="4">👋</div>
+        </div>
+        <div class="line bottomLine">
+          <div class="unrevealed rvItem" id="5">How can</div>
+          <div class="unrevealed rvItem" id="6">I help</div>
+          <div class="unrevealed rvItem" id="7">you today?</div>
+        </div>
+      </div>
+      <textarea
+        id="8"
+        class="queryInput unrevealed2 rvItem"
+        placeholder="Message {{ selectedModel!.name_trimmed }}"
+        [(ngModel)]="queryText"
+        [class.disabled]="isDisabled"
+        (input)="onTextAreaInput()"
+        [disabled]="isDisabled"
+        [placeholder]="
+          isDisabled
+            ? 'Generating response...'
+            : 'Message ' + selectedModel?.name_trimmed
+        "
+        (keydown)="sendQueryKeydown($event)"
+        #queryTextArea
+      ></textarea>
+    </div>
+  </div>
+</div>

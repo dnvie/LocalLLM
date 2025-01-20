@@ -1,0 +1,88 @@
+<div class="frame">
+  <div class="modelSelectorContainer">
+    <app-sidebar-collapse-button></app-sidebar-collapse-button>
+    <app-model-selector></app-model-selector>
+  </div>
+  <div class="content">
+    <div class="contentFrame">
+      <div class="chat" #chatContainer>
+        @for (message of messages; track $index; let last = $last) {
+          @if (message.role == "assistant" || message.role == "bot") {
+            <div class="response">
+              <span class="modelName">{{ message.model!.split(":")[0] }}:</span>
+              <br />
+              @if (isGenerating && last) {
+                <div class="skeleton skeletonResponse"></div>
+              }
+              <markdown
+                ngPreserveWhitespaces
+                katex
+                clipboard
+                [data]="message.content"
+              >
+              </markdown>
+            </div>
+          } @else {
+            <div class="questionContainer">
+              <div class="question">
+                <markdown
+                  ngPreserveWhitespaces
+                  katex
+                  [data]="message.content"
+                ></markdown>
+              </div>
+            </div>
+          }
+        }
+
+        @if (
+          this.streamingMessage !== null &&
+          this.streamingMessage.message &&
+          this.chatID === this.streamingMessage.chatID &&
+          this.streamingMessage.isResponding
+        ) {
+          <div class="response">
+            <span class="modelName"
+              >{{ this.streamingMessage.message.model!.split(":")[0] }}:</span
+            >
+            <br />
+            @if (this.streamingMessage.isGenerating) {
+              <div class="skeleton skeletonResponse"></div>
+            }
+            <markdown
+              ngPreserveWhitespaces
+              katex
+              [data]="this.streamingMessage.message.content"
+            >
+            </markdown>
+          </div>
+        }
+      </div>
+      <div class="queryInputContainer">
+        <div class="scrollDownHelper">
+          <span
+            class="material-symbols-rounded scrollDownButton"
+            [class.disabled]="isAtBottom"
+            (click)="scrollToBottom(true)"
+            >arrow_downward</span
+          >
+        </div>
+        <div class="gradient"></div>
+        <textarea
+          class="queryInput"
+          [class.disabled]="isDisabled"
+          [disabled]="isDisabled"
+          [placeholder]="
+            isDisabled
+              ? 'Generating response...'
+              : 'Message ' + selectedModel?.name_trimmed
+          "
+          [(ngModel)]="queryText"
+          (input)="onTextAreaInput()"
+          (keydown)="sendQueryKeydown($event)"
+          #queryTextArea
+        ></textarea>
+      </div>
+    </div>
+  </div>
+</div>

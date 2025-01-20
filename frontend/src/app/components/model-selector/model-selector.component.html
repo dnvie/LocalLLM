@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="modelContainer">
+    <div class="currentModel tr" (click)="toggleModelSelector()">
+      {{ selectedModel!.name_trimmed }}
+      <!--<span class="modelSize">{{ selectedModel!.details.parameter_size }}</span>-->
+      <span class="material-symbols-rounded downCaret" id="downCaret"
+        >keyboard_arrow_down</span
+      >
+    </div>
+    <div class="modelDropdown inactive" id="modelDropdown">
+      @for (model of models!.models; track $index) {
+        <div class="model" (click)="setModel(model)">
+          {{ model.name_trimmed }}
+          <span class="modelSize">{{ model.details.parameter_size }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,139 @@
+.frame {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: row;
+  background-color: #f4f4f4;
+  position: relative;
+}
+
+.modelSelectorContainer {
+  z-index: 99;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  position: absolute;
+  padding-right: 25px;
+  padding-left: 25px;
+  padding-top: 25px;
+  box-sizing: border-box;
+  pointer-events: none;
+  user-select: none;
+  gap: 8px;
+}
+
+app-model-selector {
+  pointer-events: auto;
+  user-select: text;
+}
+
+app-sidebar-collapse-button {
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 30px 0px 0px 30px;
+  box-shadow: 0px 0px 25px 5px rgba(0, 0, 0, 0.025);
+  display: flex;
+  justify-content: center;
+}
+
+.contentFrame {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.greetingContainer {
+  height: fit-content;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 25px;
+  box-sizing: border-box;
+  gap: 10px;
+  font-family: "Inter Display";
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.6px;
+  color: #000000;
+}
+
+.topLine {
+  display: flex;
+  gap: 5px;
+}
+
+.bottomLine {
+  display: flex;
+  gap: 5px;
+}
+
+.modelName {
+  color: #025dbd;
+  font-weight: 500;
+}
+
+.unrevealed {
+  opacity: 0 !important;
+  transform: translateY(10px) rotate(1deg) !important;
+  transition: all 0s cubic-bezier(0.74, -0.01, 0.26, 1.04);
+}
+
+.unrevealed2 {
+  opacity: 0 !important;
+  transform: translateY(20px) !important;
+  transition: all 0s cubic-bezier(0.74, -0.01, 0.26, 1.04);
+}
+
+.rvItem {
+  opacity: 1;
+  transform: translateY(0px);
+  transition: all 0.3s cubic-bezier(0.47, 0, 0.23, 1.08);
+}
+
+textarea {
+  resize: none;
+}
+
+textarea.disabled {
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.5;
+  transition: all 0.2s ease-in-out;
+}
+
+.queryInput {
+  bottom: 0px;
+  margin-bottom: 30px;
+  margin-top: 10px;
+  width: var(--width);
+  border: none;
+  text-decoration: none;
+  border-radius: 30px;
+  padding: 25px 25px 10px 25px;
+  background-color: #f4f4f4;
+  box-shadow: none;
+  box-sizing: border-box;
+  font-family: "Inter Display";
+  font-size: 17px;
+  &:focus {
+    outline: none;
+    border: none;
+    box-shadow: none;
+  }
+}

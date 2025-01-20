@@ -1,0 +1,60 @@
+<div class="frame" id="frame">
+  <div class="sidebar">
+    <div class="logo" (click)="goHome()">
+      <img src="assets/logoGrey.svg" />
+    </div>
+    <div class="newChatContainer">
+      <div class="chatsHeading">
+        @if (chats!.chats.length != 1) {
+          {{ chats!.chats.length }} Chats
+        } @else {
+          {{ chats!.chats.length }} Chat
+        }
+        <span class="material-symbols-rounded newChat" (click)="createNewChat()"
+          >add</span
+        >
+      </div>
+    </div>
+    <div class="chatsContainer">
+      <div class="chats">
+        @for (chat of chats!.chats; track $index) {
+          <div
+            class="chatWrapper"
+            [class.active]="chat!.id === activeChatId"
+            (click)="goToChat(chat!.id)"
+            id="{{ chat!.id }}"
+            #chatWrapper
+          >
+            <div class="chat">{{ chat!.title }}</div>
+            <span
+              class="material-symbols-rounded menuIcon"
+              (click)="toggleMenu(chat!.id, $event)"
+            >
+              more_vert
+            </span>
+            <div
+              class="menu"
+              [class.show]="chat!.id === openMenuChatId"
+              (click)="$event.stopPropagation()"
+            >
+              <div class="menuItemContainer">
+                <div class="menuItem editItem" (click)="updateTitle(chat!.id)">
+                  Edit
+                </div>
+                <div class="menuItem deleteItem" (click)="deleteChat(chat!.id)">
+                  Delete
+                </div>
+              </div>
+              <span
+                class="material-symbols-rounded menuIcon"
+                (click)="toggleMenu(chat!.id, $event)"
+              >
+                more_vert
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+.sidebarCollapseContainer {
+  padding: 10px 14px;
+  border: 0.5px solid #dfdfdf;
+  background-color: #ffffff;
+  border-radius: 15px;
+}
+
+.sidebarCollapseButton {
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.sidebarCollapseContainer:hover {
+  background-color: #f4f4f4;
+  cursor: pointer;
+}

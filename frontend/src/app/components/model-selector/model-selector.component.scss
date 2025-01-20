@@ -1,0 +1,112 @@
+.container {
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.modelContainer {
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.sidebarCollapseButton {
+  margin-top: 9px;
+}
+
+.currentModel {
+  width: fit-content;
+  padding: 10px 14px;
+  border: 0.5px solid #dfdfdf;
+  background-color: #ffffff;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: "Inter Display";
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.35px;
+  user-select: none;
+}
+
+.currentModel:hover {
+  cursor: pointer;
+  background-color: #f4f4f4;
+}
+
+.modelSize {
+  font-family: "DM Mono";
+  font-size: 13px;
+  color: #025dbd;
+  background-color: #d4e9ff;
+  padding: 1px 7px;
+  border-radius: 6px;
+  font-weight: 500;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+}
+
+.downCaret {
+  margin-left: 20px;
+  margin-left: 0px;
+  transition: all 0.15s cubic-bezier(0.74, -0.01, 0.26, 1.04);
+}
+
+#downCaret.rotate {
+  transform: rotate(180deg);
+  transition: all 0.15s cubic-bezier(0.74, -0.01, 0.26, 1.04);
+}
+
+.modelDropdown {
+  padding: 10px 10px;
+  border: 0.5px solid #dfdfdf;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 1;
+  user-select: initial;
+  pointer-events: initial;
+  background-color: #ffffff;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+#modelDropdown.inactive {
+  transform: translateY(-10px);
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  display: none;
+}
+
+.model {
+  font-family: "Inter Display";
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.35px;
+  display: flex;
+  gap: 30px;
+  justify-content: space-between;
+  padding: 8px 8px;
+  border-radius: 10px;
+  user-select: none;
+}
+
+.model.active {
+  background-color: #f4f4f4;
+  font-weight: 500;
+}
+
+.model:hover {
+  background-color: #f4f4f4;
+  cursor: pointer;
+}
