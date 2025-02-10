@@ -84,3 +84,7 @@ func UpdateChatTitle(chatID, title string) error {
 func DeleteChat(chatID string) error {
 	return data.DeleteChat(chatID)
 }
+
+func AddInterruptedMessage(chatID string, message data.Message) error {
+	return data.AddInterruptedMessage(chatID, message)
+}

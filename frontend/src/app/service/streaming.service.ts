@@ -1,12 +1,10 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { BehaviorSubject } from "rxjs";
+import { Observable, BehaviorSubject, Subject } from "rxjs";
 import { Message, StreamingMessage } from "../data/message";
 import { Router, NavigationEnd } from "@angular/router";
 import { ChatService } from "./chat.service";
 import { Chat } from "../data/chat";
 import { filter } from "rxjs/operators";
-import { Subject } from "rxjs";
 
 const baseUrl = "http://localhost:80";
 
@@ -27,6 +25,9 @@ export class StreamingService {
 
   private scrollToBottomSubject = new Subject<void>();
   scrollToBottom$ = this.scrollToBottomSubject.asObservable();
+
+  private activeRequestController: AbortController | null = null;
+  private messageSaved = false;
 
   triggerScrollToBottom() {
     this.scrollToBottomSubject.next();
@@ -51,11 +52,61 @@ export class StreamingService {
       });
   }
 
+  private saveMessageToSession(message: Message, chatID: string) {
+    if (this.messageSaved) return;
+    
+    const existingMessages: Message[] = JSON.parse(
+      sessionStorage.getItem(chatID) || "[]",
+    );
+    existingMessages.push(message);
+    sessionStorage.setItem(
+      chatID,
+      JSON.stringify(existingMessages),
+    );
+    this.messageSaved = true;
+  }
+
+  async interruptStream() {
+    if (this.activeRequestController) {
+      this.activeRequestController.abort();
+      this.activeRequestController = null;
+
+      const currentMessage = this.streamingMessage.getValue();
+      if (currentMessage) {
+        this.saveMessageToSession(currentMessage.message, currentMessage.chatID);
+
+        try {
+          await this.chatService.saveInterruptedMessage(
+            currentMessage.chatID,
+            currentMessage.message,
+          );
+        } catch (err) {
+          console.error("Error saving interrupted message:", err);
+        }
+
+        const currentStatus = this.streamCompletionStatus.value;
+        this.streamCompletionStatus.next({
+          ...currentStatus,
+          [currentMessage.chatID]: true,
+        });
+
+        this.streamingMessage.next({
+          ...currentMessage,
+          isGenerating: false,
+          isResponding: false,
+        });
+      }
+      this.chatService.setIsDisabled(false);
+    }
+  }
+
   sendQuery(selectedModel: string, queryText: string, chatId: string) {
     if (!queryText || !selectedModel) {
       console.log("Please provide both a query and a (valid) model");
       return;
     }
+    this.messageSaved = false;
+    this.interruptStream();
 
     const streamingMessage: StreamingMessage = {
       chatID: chatId,
@@ -90,17 +141,25 @@ export class StreamingService {
         this.streamingMessage.next({ ...streamingMessage });
       },
       error: (err) => {
-        console.error("Streaming error:", err);
+        if (err.name === 'AbortError') {
+          console.log('Stream was interrupted');
+        } else {
+          console.error("Streaming error:", err);
+          const currentMessage = this.streamingMessage.getValue();
+          if (currentMessage) {
+            this.saveMessageToSession(currentMessage.message, currentMessage.chatID);
+          }
+        }
       },
       complete: () => {
-        const existingMessages: Message[] = JSON.parse(
-          sessionStorage.getItem(streamingMessage.chatID) || "[]",
-        );
-        existingMessages.push(streamingMessage.message);
-        sessionStorage.setItem(
-          streamingMessage.chatID,
-          JSON.stringify(existingMessages),
-        );
+        const currentMessage = this.streamingMessage.getValue();
+        if (currentMessage && !currentMessage.message.content.trim()) {
+          return;
+        }
+
+        if (currentMessage) {
+          this.saveMessageToSession(currentMessage.message, currentMessage.chatID);
+        }
 
         const currentStatus = this.streamCompletionStatus.value;
         this.streamCompletionStatus.next({
@@ -114,6 +173,7 @@ export class StreamingService {
         });
 
         this.chatService.setIsDisabled(false);
+        this.activeRequestController = null;
       },
     });
   }
@@ -124,6 +184,9 @@ export class StreamingService {
     chatID: string | null,
   ): Observable<{ chatID: string | null; chunk: string }> {
     return new Observable((observer) => {
+      this.activeRequestController = new AbortController();
+      const signal = this.activeRequestController.signal;
+
       const url = `${baseUrl}/chat/${model}/${chatID || "new"}`;
       const body = { query };
       const encoder = new TextDecoder();
@@ -132,6 +195,7 @@ export class StreamingService {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
+        signal,
       })
         .then((response) => {
           const chatID = response.headers.get("chat_id");
@@ -140,6 +204,12 @@ export class StreamingService {
             observer.error("No readable stream available");
             return;
           }
+
+          signal.addEventListener('abort', () => {
+            reader.cancel();
+            observer.complete();
+          });
+
           function read() {
             reader!.read().then(({ done, value }) => {
               if (done) {
@@ -149,6 +219,8 @@ export class StreamingService {
               const chunk = encoder.decode(value, { stream: true });
               observer.next({ chatID, chunk });
               read();
+            }).catch(error => {
+              observer.error(error);
             });
           }
           read();
@@ -156,6 +228,12 @@ export class StreamingService {
         .catch((error) => {
           observer.error(error);
         });
+
+      return () => {
+        if (this.activeRequestController) {
+          this.activeRequestController.abort();
+        }
+      };
     });
   }
 }

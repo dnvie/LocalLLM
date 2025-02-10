@@ -22,6 +22,7 @@ func Serve() {
 	r.Get("/chat/{id}", GetChat)
 	//r.Post("/query/{model}", ProcessQuery) // currently not being used
 	r.Post("/chat/{model}/{id}", ProcessChat)
+	r.Post("/addInterruptedMessage/{id}", AddInterruptedMessage)
 	r.Patch("/chat/title/{id}", UpdateChatTitle)
 	r.Delete("/chat/{id}", DeleteChat)
 

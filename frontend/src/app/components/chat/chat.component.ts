@@ -111,6 +111,10 @@ export class ChatComponent implements OnInit {
     }
   }
 
+  handleInterrupt() {
+    this.streamingService.interruptStream();
+  }
+
   onTextAreaInput() {
     const textarea: HTMLTextAreaElement = this.queryTextAreaRef.nativeElement;
     textarea.style.height = "auto";

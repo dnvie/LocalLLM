@@ -23,6 +23,26 @@ export class ChatService {
     this.isDisabledSubject.next(isDisabled);
   }
 
+  saveInterruptedMessage(chatID: string, message: Message): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const messagePayload = {
+        model: message.model,
+        role: message.role,
+        content: message.content
+      };
+
+      this.http.post(`${baseUrl}/addInterruptedMessage/${chatID}`, messagePayload).subscribe({
+        next: () => {
+          resolve();
+        },
+        error: (err) => {
+          console.error("Error saving message:", err);
+          reject(err);
+        },
+      });
+    });
+  }
+
   loadChats(userID: string): Promise<void> {
     /**
    TODO: Implement account system.

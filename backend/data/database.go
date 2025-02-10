@@ -190,3 +190,10 @@ func InsertDefaultUser(userID string) {
 		log.Fatal(err)
 	}
 }
+
+// Add an interrupted message to the database.
+func AddInterruptedMessage(chatID string, message Message) error {
+	query := `INSERT INTO messages (chat_id, role, content, model) VALUES (?, ?, ?, ?);`
+	_, err := Db.Exec(query, chatID, message.Role, message.Content, message.Model)
+	return err
+}

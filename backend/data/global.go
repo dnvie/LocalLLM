@@ -12,4 +12,4 @@ var (
 )
 
 // Specify the Ollama server address here: (example: "http://127.0.0.1:11434")
-const OLLAMA_SERVER = ""
+const OLLAMA_SERVER = "http://<ip-address>:<port>"

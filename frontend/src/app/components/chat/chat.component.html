@@ -68,6 +68,13 @@
           >
         </div>
         <div class="gradient"></div>
+        @if (isDisabled) {
+          <div class="interruptButtonContainer">
+            <div class="interruptButtonOuter" (click)="handleInterrupt()">
+              <div class="interruptButton"></div>
+            </div>
+          </div>
+        }
         <textarea
           class="queryInput"
           [class.disabled]="isDisabled"

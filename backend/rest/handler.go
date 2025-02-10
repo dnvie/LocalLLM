@@ -196,3 +196,20 @@ func DeleteChat(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+// Stores any messages that were interrupted by the user during generation.
+func AddInterruptedMessage(w http.ResponseWriter, r *http.Request) {
+	chatID := chi.URLParam(r, "id")
+	var message data.Message
+	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	err := service.AddInterruptedMessage(chatID, message)
+	if err != nil {
+		http.Error(w, "Error processing chat", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}

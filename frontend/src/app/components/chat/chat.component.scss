@@ -197,6 +197,42 @@ textarea.disabled {
   );
 }
 
+.interruptButtonContainer {
+  position: absolute;
+  width: var(--width);
+  height: fit-content;
+  background-color: transparent;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 40px;
+  user-select: none;
+  pointer-events: none;
+}
+
+.interruptButtonOuter {
+  height: 35px;
+  width: 35px;
+  border-radius: 999px;
+  background-color: #000000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: initial;
+  pointer-events: initial;
+}
+
+.interruptButtonOuter:hover {
+  cursor: pointer;
+  background-color: #272727;
+}
+
+.interruptButton {
+  height: 12px;
+  width: 12px;
+  border-radius: 2px;
+  background-color: white;
+}
+
 .queryInput {
   bottom: 0px;
   margin-bottom: 30px;
