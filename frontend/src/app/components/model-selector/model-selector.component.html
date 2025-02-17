@@ -10,8 +10,7 @@
     <div class="modelDropdown inactive" id="modelDropdown">
       @for (model of models!.models; track $index) {
         <div class="model" (click)="setModel(model)">
-          {{ model.name_trimmed }}
-          <span class="modelSize">{{ model.details.parameter_size }}</span>
+          {{ model.name_trimmed }} <span class="modelTags"><span class="modelQuantization modelSize"> {{ model.details.quantization_level }}</span><span class="modelSize">{{ model.details.parameter_size }}</span></span>
         </div>
       }
     </div>

@@ -54,9 +54,10 @@ type ChatResponse struct {
 }
 
 type Message struct {
-	Model   string `json:"model"`
-	Role    string `json:"role"`
-	Content string `json:"content"`
+	Model       string `json:"model"`
+	Role        string `json:"role"`
+	Content     string `json:"content"`
+	Interrupted bool   `json:"interrupted"`
 }
 
 type Chat struct {

@@ -28,7 +28,8 @@ export class ChatService {
       const messagePayload = {
         model: message.model,
         role: message.role,
-        content: message.content
+        content: message.content,
+        interrupted: true
       };
 
       this.http.post(`${baseUrl}/addInterruptedMessage/${chatID}`, messagePayload).subscribe({

@@ -18,16 +18,13 @@
 }
 
 .logo {
-  width: 100%;
   padding-bottom: 10px;
   padding-top: 4px;
-  height: 92px;
   min-height: 92px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   margin-left: 25px;
-  transform: scale(1);
 }
 
 .chatsContainer {
@@ -53,22 +50,21 @@
 
 .chats {
   padding-bottom: 10px;
-  width: 90%;
+  width: 230px;
+  margin-left: 4px;
   height: fit-content;
-  //overflow: scroll;
 }
 
 .chatsHeading {
   display: flex;
   align-items: center;
-  padding: 0px 15px 0px 15px;
+  padding: 0px 0px 0px 15px;
   gap: 3px;
   font-family: "Inter Display";
   font-size: 14px;
   letter-spacing: 0px;
   font-weight: 600;
   color: #000000;
-  //color: #025dbd;
   justify-content: space-between;
 }
 
@@ -76,16 +72,17 @@
   width: 90%;
   height: fit-content;
   min-height: fit-content;
-  display: flex;
+  display: flex; 
   flex-direction: column;
   justify-content: flex-end;
-  padding-left: 5%;
+  padding-left: 10px;
   padding-bottom: 10px;
   gap: 1px;
   overflow: hidden;
 }
 
 .newChat {
+  align-items: center;
   border-radius: 20px;
   padding: 3px;
 }
@@ -93,7 +90,6 @@
 .newChat:hover {
   background-color: #e7e7e750;
   border-radius: 20px;
-  padding: 3px;
   cursor: pointer;
 }
 
@@ -168,7 +164,7 @@
   height: 30px;
   width: 100%;
   max-width: 100%;
-  padding: 20px 15px 20px 10px;
+  padding: 20px 0px 20px 10px;
   border-radius: 13px;
   box-sizing: border-box;
   font-family: "Inter Display";

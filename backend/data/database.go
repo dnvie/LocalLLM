@@ -44,6 +44,7 @@ func InitDb() {
 		content TEXT NOT NULL,
 		model TEXT,
 		timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+		interrupted BOOLEAN NOT NULL DEFAULT FALSE,
 		FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
 	);`
 	_, err = Db.Exec(messagesTable)
@@ -92,9 +93,9 @@ func InsertChat(chatID, userID, title string) error {
 }
 
 // Insert a message into the database.
-func InsertMessage(chatID, role, content, model string) error {
-	query := `INSERT INTO messages (chat_id, role, content, model) VALUES (?, ?, ?, ?);`
-	_, err := Db.Exec(query, chatID, role, content, model)
+func InsertMessage(chatID, role, content, model string, interrupted bool) error {
+	query := `INSERT INTO messages (chat_id, role, content, model, interrupted) VALUES (?, ?, ?, ?, ?);`
+	_, err := Db.Exec(query, chatID, role, content, model, interrupted)
 	return err
 }
 
@@ -126,7 +127,7 @@ func DeleteChat(chatID string) error {
 
 // Query all messages from a chat, given the chat ID.
 func QueryMessagesFromChat(chatID string) ([]Message, error) {
-	query := `SELECT role, content, model, timestamp FROM messages WHERE chat_id = ? ORDER BY timestamp;`
+	query := `SELECT role, content, model, timestamp, interrupted FROM messages WHERE chat_id = ? ORDER BY timestamp;`
 	rows, err := Db.Query(query, chatID)
 	if err != nil {
 		return nil, err
@@ -137,14 +138,16 @@ func QueryMessagesFromChat(chatID string) ([]Message, error) {
 	for rows.Next() {
 		var role, content, model string
 		var timestamp time.Time
-		if err := rows.Scan(&role, &content, &model, &timestamp); err != nil {
+		var interrupted bool
+		if err := rows.Scan(&role, &content, &model, &timestamp, &interrupted); err != nil {
 			return nil, err
 		}
 
 		messages = append(messages, Message{
-			Model:   model,
-			Role:    role,
-			Content: content,
+			Model:       model,
+			Role:        role,
+			Content:     content,
+			Interrupted: interrupted,
 		})
 	}
 
@@ -193,7 +196,7 @@ func InsertDefaultUser(userID string) {
 
 // Add an interrupted message to the database.
 func AddInterruptedMessage(chatID string, message Message) error {
-	query := `INSERT INTO messages (chat_id, role, content, model) VALUES (?, ?, ?, ?);`
-	_, err := Db.Exec(query, chatID, message.Role, message.Content, message.Model)
+	query := `INSERT INTO messages (chat_id, role, content, model, interrupted) VALUES (?, ?, ?, ?, ?);`
+	_, err := Db.Exec(query, chatID, message.Role, message.Content, message.Model, message.Interrupted)
 	return err
 }

@@ -122,6 +122,16 @@ app-sidebar-collapse-button {
   word-break: break-word;
 }
 
+.interruptedMessage {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-family: "Inter Display";
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.3392156863);
+}
+
 .modelName {
   color: #025dbd;
   opacity: 0.8;
@@ -144,6 +154,7 @@ textarea.disabled {
 }
 
 .queryInputContainer {
+  position: relative;
   min-height: fit-content;
   width: 100%;
   display: flex;
@@ -155,7 +166,7 @@ textarea.disabled {
 
 .scrollDownHelper {
   position: relative;
-  bottom: 30px;
+  bottom: 35px;
   z-index: 100;
   height: 0px;
   background-color: transparent;
@@ -188,8 +199,8 @@ textarea.disabled {
 .gradient {
   width: var(--width);
   height: 20px;
-  bottom: 20px;
-  position: relative;
+  bottom: 117px;
+  position: absolute;
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0) 0%,
@@ -200,11 +211,13 @@ textarea.disabled {
 .interruptButtonContainer {
   position: absolute;
   width: var(--width);
-  height: fit-content;
+  height: 100%;
   background-color: transparent;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   padding-right: 40px;
+  padding-bottom: 20px;
   user-select: none;
   pointer-events: none;
 }
@@ -236,21 +249,22 @@ textarea.disabled {
 .queryInput {
   bottom: 0px;
   margin-bottom: 30px;
+  margin-right: 5px;
   margin-top: 10px;
   width: var(--width);
-  border: none;
+  border: 0.5px solid rgb(223, 223, 223);
   text-decoration: none;
-  border-radius: 30px;
+  border-radius: 25px;
   padding: 25px 25px 10px 25px;
-  background-color: #f4f4f4;
-  box-shadow: none;
+  background-color: #ffffff;
+  box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.085);
   box-sizing: border-box;
   font-family: "Inter Display";
   font-size: 17px;
+  z-index: 99;
   &:focus {
     outline: none;
-    border: none;
-    box-shadow: none;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1);
   }
 }
 

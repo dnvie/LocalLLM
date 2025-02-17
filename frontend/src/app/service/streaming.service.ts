@@ -15,6 +15,9 @@ export class StreamingService {
   private streamingMessage = new BehaviorSubject<StreamingMessage | null>(null);
   streamingMessage$ = this.streamingMessage.asObservable();
 
+  private sessionStorageUpdated = new Subject<string>();
+  sessionStorageUpdated$ = this.sessionStorageUpdated.asObservable();
+
   private streamCompletionStatus = new BehaviorSubject<{
     [chatId: string]: boolean;
   }>({});
@@ -64,6 +67,8 @@ export class StreamingService {
       JSON.stringify(existingMessages),
     );
     this.messageSaved = true;
+
+    this.sessionStorageUpdated.next(chatID);
   }
 
   async interruptStream() {
@@ -73,30 +78,57 @@ export class StreamingService {
 
       const currentMessage = this.streamingMessage.getValue();
       if (currentMessage) {
-        this.saveMessageToSession(currentMessage.message, currentMessage.chatID);
-
-        try {
-          await this.chatService.saveInterruptedMessage(
-            currentMessage.chatID,
-            currentMessage.message,
+        setTimeout(() => {
+          const existingMessages: Message[] = JSON.parse(
+            sessionStorage.getItem(currentMessage.chatID) || "[]"
           );
-        } catch (err) {
-          console.error("Error saving interrupted message:", err);
-        }
+  
+          if (existingMessages.length > 0) {
+            const lastMessage = existingMessages[existingMessages.length - 1];
+            
+            if (
+              lastMessage.model === currentMessage.message.model &&
+              lastMessage.content === currentMessage.message.content &&
+              lastMessage.role === currentMessage.message.role
+            ) {
+              lastMessage.interrupted = true;
+              
+              sessionStorage.setItem(
+                currentMessage.chatID,
+                JSON.stringify(existingMessages)
+              );
+              this.sessionStorageUpdated.next(currentMessage.chatID);
+            } else {
+              console.warn('Last message in storage does not match current message');
+            }
+          }
+        }, 0);
 
         const currentStatus = this.streamCompletionStatus.value;
-        this.streamCompletionStatus.next({
-          ...currentStatus,
-          [currentMessage.chatID]: true,
-        });
+      this.streamCompletionStatus.next({
+        ...currentStatus,
+        [currentMessage.chatID]: true,
+      });
 
-        this.streamingMessage.next({
-          ...currentMessage,
-          isGenerating: false,
-          isResponding: false,
-        });
+      this.streamingMessage.next({
+        ...currentMessage,
+        isGenerating: false,
+        isResponding: false,
+      });
+
+      try {
+        await this.chatService.saveInterruptedMessage(
+          currentMessage.chatID,
+          {
+            ...currentMessage.message,
+            interrupted: true
+          }
+        );
+      } catch (err) {
+        console.error("Error saving interrupted message:", err);
       }
-      this.chatService.setIsDisabled(false);
+    }
+    this.chatService.setIsDisabled(false);
     }
   }
 
@@ -114,6 +146,7 @@ export class StreamingService {
         model: selectedModel,
         role: "assistant",
         content: "",
+        interrupted: false,
       },
       isGenerating: true,
       isResponding: true,
@@ -141,14 +174,14 @@ export class StreamingService {
         this.streamingMessage.next({ ...streamingMessage });
       },
       error: (err) => {
-        if (err.name === 'AbortError') {
-          console.log('Stream was interrupted');
+        if (err.name === "AbortError") {
+          console.log("Request aborted");
         } else {
           console.error("Streaming error:", err);
+        }
           const currentMessage = this.streamingMessage.getValue();
           if (currentMessage) {
             this.saveMessageToSession(currentMessage.message, currentMessage.chatID);
-          }
         }
       },
       complete: () => {

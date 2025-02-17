@@ -46,6 +46,7 @@ export class ChatComponent implements OnInit {
   @ViewChild("chatContainer") chatContainerRef!: ElementRef;
 
   private scrollSubscription!: Subscription;
+  private sessionStorageSubscription!: Subscription;
 
   constructor(
     private service: HomeService,
@@ -98,6 +99,7 @@ export class ChatComponent implements OnInit {
         model: this.selectedModel.name,
         content: this.queryText.toString(),
         role: "user",
+        interrupted: false,
       });
       this.scrollToBottom();
       sessionStorage.setItem(this.chatID!, JSON.stringify(this.messages));
@@ -167,6 +169,18 @@ export class ChatComponent implements OnInit {
           this.scrollToBottom(false);
         }
       },
+    );
+
+    this.sessionStorageSubscription = this.streamingService.sessionStorageUpdated$.subscribe(
+      (updatedChatId) => {
+        if (this.chatID && updatedChatId === this.chatID) {
+          const savedMessages = sessionStorage.getItem(this.chatID);
+          if (savedMessages) {
+            this.messages = JSON.parse(savedMessages);
+            this.cdRef.detectChanges();
+          }
+        }
+      }
     );
 
     this.streamingService.streamingMessage$.subscribe((message) => {

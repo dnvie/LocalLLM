@@ -21,6 +21,9 @@
                 [data]="message.content"
               >
               </markdown>
+              @if (message.interrupted) {
+                <div class="interruptedMessage">Interrupted</div>
+              }
             </div>
           } @else {
             <div class="questionContainer">
@@ -81,7 +84,7 @@
           [disabled]="isDisabled"
           [placeholder]="
             isDisabled
-              ? 'Generating response...'
+              ? ((this.streamingMessage?.message?.content == '' || this.streamingMessage == null) ? 'Loading model...' : 'Generating response...')
               : 'Message ' + selectedModel?.name_trimmed
           "
           [(ngModel)]="queryText"

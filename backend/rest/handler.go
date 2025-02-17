@@ -135,7 +135,7 @@ func ProcessChat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert the user message into the database
-	err := data.InsertMessage(chatID, "user", req.Query, modelName)
+	err := data.InsertMessage(chatID, "user", req.Query, modelName, false)
 	if err != nil {
 		http.Error(w, "Error processing chat", http.StatusInternalServerError)
 		return

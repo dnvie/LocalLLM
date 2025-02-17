@@ -42,6 +42,7 @@
 }
 
 .modelSize {
+  opacity: 0.75;
   font-family: "DM Mono";
   font-size: 13px;
   color: #025dbd;
@@ -52,6 +53,11 @@
   height: fit-content;
   display: flex;
   align-items: center;
+}
+
+.modelQuantization {
+  color: #878787;
+  background-color: #f3f3f3;
 }
 
 .downCaret {
@@ -78,6 +84,7 @@
   background-color: #ffffff;
   max-height: 80vh;
   overflow-y: auto;
+  min-width: 250px;
 }
 
 #modelDropdown.inactive {
@@ -91,14 +98,23 @@
 .model {
   font-family: "Inter Display";
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 450;
   letter-spacing: -0.35px;
   display: flex;
-  gap: 30px;
+  flex-direction: row;
+  gap: 5px;
   justify-content: space-between;
   padding: 8px 8px;
   border-radius: 10px;
   user-select: none;
+}
+
+.modelTags {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
 }
 
 .model.active {
