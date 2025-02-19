@@ -26,7 +26,8 @@ type ModelDetails struct {
 }
 
 type QueryRequest struct {
-	Query string `json:"query"`
+	Query  string   `json:"query"`
+	Images []string `json:"images"`
 }
 
 type Request struct {
@@ -54,10 +55,11 @@ type ChatResponse struct {
 }
 
 type Message struct {
-	Model       string `json:"model"`
-	Role        string `json:"role"`
-	Content     string `json:"content"`
-	Interrupted bool   `json:"interrupted"`
+	Model       string   `json:"model"`
+	Role        string   `json:"role"`
+	Content     string   `json:"content"`
+	Images      []string `json:"images"`
+	Interrupted bool     `json:"interrupted"`
 }
 
 type Chat struct {

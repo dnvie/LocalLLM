@@ -11,6 +11,8 @@ import { Model, Models } from "../../data/models";
 })
 export class ModelSelectorComponent implements OnInit {
   models: Models | null = null;
+  groupedModelsMap: { [key: string]: Model[] } = {};
+  groupedModels: Model[][] = [];
   selectedModel: Model | null = null;
   isListExpanded: boolean = false;
 
@@ -23,6 +25,24 @@ export class ModelSelectorComponent implements OnInit {
     document.getElementById("modelDropdown")!.classList.toggle("inactive");
     document.getElementById("downCaret")!.classList.toggle("rotate");
     this.isListExpanded = !this.isListExpanded;
+  }
+
+  expand(index: number) {
+    document.getElementById("innerModels"+index)!.classList.toggle("active");
+    document.getElementById("modelCategory"+index)!.classList.toggle("active");
+    document.getElementById("caret"+index)!.classList.toggle("active");
+  }
+
+  collapseAll() {
+    const innerModels = document.getElementsByClassName("innerModels");
+    const modelCategories = document.getElementsByClassName("modelCategory");
+    const carets = document.getElementsByClassName("caret");
+
+    for (let i = 0; i < innerModels.length; i++) {
+      innerModels[i].classList.remove("active");
+      modelCategories[i].classList.remove("active");
+      carets[i].classList.remove("active");
+    }
   }
 
   setModel(model: Model) {
@@ -40,11 +60,32 @@ export class ModelSelectorComponent implements OnInit {
 
     this.modelService.models$.subscribe((models) => {
       this.models = models;
+      this.groupedModels = this.groupModels();
+      console.log(this.groupedModels);
     });
 
     this.modelService.selectedModel$.subscribe((model) => {
       this.selectedModel = model;
     });
+  }
+
+  groupModels(): Model[][] {
+    this.models?.models.forEach((model) => {
+      const trimmedName = model.name_trimmed;
+      if (!this.groupedModelsMap[trimmedName]) {
+      this.groupedModelsMap[trimmedName] = [];
+      }
+    this.groupedModelsMap[trimmedName].push(model);
+    })
+
+    Object.keys(this.groupedModelsMap).forEach((key) => {
+      this.groupedModelsMap[key].sort((a, b) => {
+        const paramA = parseFloat(a.details.parameter_size) || 0;
+        const paramB = parseFloat(b.details.parameter_size) || 0;
+        return paramA - paramB;
+      });
+    });
+    return Object.values(this.groupedModelsMap);
   }
 
   @HostListener("document:click", ["$event"])
@@ -58,7 +99,9 @@ export class ModelSelectorComponent implements OnInit {
       !dropdown.contains(event.target) &&
       !currentModel.contains(event.target)
     ) {
+      document.getElementById("downCaret")!.classList.remove("rotate");
       dropdown.classList.add("inactive");
+      this.collapseAll();
     }
   }
 }

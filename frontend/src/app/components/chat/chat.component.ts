@@ -33,6 +33,7 @@ export class ChatComponent implements OnInit {
   models: Models | null = null;
   messages: Message[] = [];
   queryText: string = "";
+  images: string[] = [];
   selectedModel: Model | null = null;
   response: string = "";
   chatID: string | null = null;
@@ -41,6 +42,8 @@ export class ChatComponent implements OnInit {
   isGenerating: boolean = false;
   streamingMessage: StreamingMessage | null = null;
   isAtBottom: boolean = true;
+  files: File[] = [];
+  hasFiles: boolean = this.files.length != 0;
 
   @ViewChild("queryTextArea") queryTextAreaRef!: ElementRef;
   @ViewChild("chatContainer") chatContainerRef!: ElementRef;
@@ -86,11 +89,26 @@ export class ChatComponent implements OnInit {
         event.preventDefault();
         this.sendQuery();
         this.queryText = "";
+        this.images = [];
+        this.hasFiles = false;
+        this.files = [];
         const textarea: HTMLTextAreaElement =
           this.queryTextAreaRef.nativeElement;
         textarea.style.height = "auto";
       }
     }
+  }
+
+  simulateEnterPress() {
+    const event = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      code: 'Enter',
+      keyCode: 13,
+      which: 13,
+      bubbles: true
+    });
+  
+    this.sendQueryKeydown(event);
   }
 
   sendQuery() {
@@ -99,15 +117,16 @@ export class ChatComponent implements OnInit {
         model: this.selectedModel.name,
         content: this.queryText.toString(),
         role: "user",
+        //images: this.images,
         interrupted: false,
       });
       this.scrollToBottom();
       sessionStorage.setItem(this.chatID!, JSON.stringify(this.messages));
-      console.log(JSON.parse(sessionStorage.getItem(this.chatID!)!));
       this.chatService.setIsDisabled(true);
       this.streamingService.sendQuery(
         this.selectedModel.name,
         this.queryText,
+        this.images,
         this.chatID!,
       );
     }
@@ -160,6 +179,31 @@ export class ChatComponent implements OnInit {
     }
   }
 
+  onFileUpload(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.files = [file]
+      this.hasFiles = this.files.length > 0
+      const reader = new FileReader();
+      
+      reader.onload = (e: any) => {
+        const base64String = e.target.result;
+        const base64Data = base64String.split(",")[1];
+        this.images = [base64Data];
+      };
+      reader.readAsDataURL(file);
+      event.target.value = "";
+    } else {
+      console.log("No file selected");
+    }
+  }
+
+  removeFile(index: number) {
+    this.files.splice(index, 1);
+    this.images.splice(index, 1);
+    this.hasFiles = this.files.length > 0
+  }
+
   ngOnInit(): void {
     window.addEventListener("beforeunload", this.preventUnload);
 
@@ -199,6 +243,7 @@ export class ChatComponent implements OnInit {
     const navigationState = history.state as {
       query?: string;
       messages?: Message[];
+      images?: string[];
     };
 
     if (navigationState.messages) {
@@ -253,10 +298,8 @@ export class ChatComponent implements OnInit {
             this.scrollToBottom();
           }
         } else {
-          console.log("else here");
           if (!navigationState.messages) {
             this.messages = [];
-            console.log("msgs sset to null");
           }
           this.chatID = null;
         }
@@ -264,6 +307,7 @@ export class ChatComponent implements OnInit {
 
       if (navigationState.query) {
         this.queryText = navigationState.query;
+        this.images = navigationState.images || [];
         this.sendQuery();
         this.queryText = "";
         history.replaceState({}, document.title);

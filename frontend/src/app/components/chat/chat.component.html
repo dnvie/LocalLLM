@@ -71,27 +71,66 @@
           >
         </div>
         <div class="gradient"></div>
-        @if (isDisabled) {
-          <div class="interruptButtonContainer">
-            <div class="interruptButtonOuter" (click)="handleInterrupt()">
-              <div class="interruptButton"></div>
+        <div class="queryOuterContainer" [class.inactive]="!hasFiles">
+          @if (files.length > 0) {
+            <div class="attachmentsContainer">
+              @for (file of files; track $index) {
+                <div class="attachmentFrame">
+                  <div class="attachmentImage"><img [src]="'data:image/jpeg;base64,' + this.images[$index]"/></div>
+                  <div class="attachmentInfo">
+                    <div class="attachmentName">{{ file.name }}</div>
+                    <div class="attachmentType">{{ file.type }}</div>
+                  </div>
+                  <div class="removeAttachment" (click)="removeFile($index)"><span class="material-symbols-rounded closeSymbol">
+                    close
+                    </span></div>
+                </div>
+              }
             </div>
+          }
+          <div class="queryInputBorder">
+            <textarea
+            id="8"
+            class="queryInput unrevealed2 rvItem"
+            placeholder="Message {{ selectedModel!.name_trimmed }}"
+            [(ngModel)]="queryText"
+            [class.disabled]="isDisabled"
+            (input)="onTextAreaInput()"
+            [disabled]="isDisabled"
+            [placeholder]="
+              isDisabled
+                ? 'Generating response...'
+                : 'Message ' + selectedModel?.name_trimmed
+            "
+            (keydown)="sendQueryKeydown($event)"
+            #queryTextArea
+          ></textarea>
+          <div class="inputBorderContainer">
+            <input type="file" accept=".png, .jpg, .webp, .jpeg, .avif" (change)="onFileUpload($event)" #fileUpload>
+            <div class="inputButton unrevealed rvItem" id="9" (click)="fileUpload.click()">
+              <span class="material-symbols-rounded">
+                upload
+                </span>
+              Upload Image
+            </div>
+            @if (isDisabled) {
+              <div class="interruptButtonContainer">
+                <div class="interruptButtonOuter" (click)="handleInterrupt()">
+                  <div class="interruptButton"></div>
+                </div>
+              </div>
+            } @else {
+              <div class="interruptButtonContainer">
+                <div class="interruptButtonOuter" (click)="simulateEnterPress()">
+                  <div class="sendButton"><span class="material-symbols-rounded sendIcon">
+                    send
+                    </span></div>
+                </div>
+              </div>
+            }
           </div>
-        }
-        <textarea
-          class="queryInput"
-          [class.disabled]="isDisabled"
-          [disabled]="isDisabled"
-          [placeholder]="
-            isDisabled
-              ? ((this.streamingMessage?.message?.content == '' || this.streamingMessage == null) ? 'Loading model...' : 'Generating response...')
-              : 'Message ' + selectedModel?.name_trimmed
-          "
-          [(ngModel)]="queryText"
-          (input)="onTextAreaInput()"
-          (keydown)="sendQueryKeydown($event)"
-          #queryTextArea
-        ></textarea>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -1,9 +1,25 @@
 :root {
   --width: 850px;
+  font-family: 'InterVariable', sans-serif;
+  font-feature-settings: 'liga' 1, 'calt' 1, 'dlig' 1, 'ss03' 1, 'cv01' 1, 'cv05' 1, 'cv06' 1;
+  letter-spacing: -0.025em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 [data-theme="light"] {
   --factor: 1;
+}
+
+@font-face {
+  font-family: 'InterVariable';
+  src: url("/frontend/src/assets/InterVariable.ttf");
+  font-style: normal;
+}
+
+@supports (font-variation-settings: normal) {
+  :root { font-family: InterVariable, sans-serif; }
 }
 
 * {

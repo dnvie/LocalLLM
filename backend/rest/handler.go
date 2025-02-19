@@ -148,6 +148,14 @@ func ProcessChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(req.Images) > 0 {
+		// Attached images are not stored in the database, therefore we have to append any images to the last message, as they are ommited when loading the messages from the database.
+		messages[len(messages)-1].Images = req.Images
+
+		// If the query contains an image, we omit the chat history, as the LLM (apparently) can only process an image if a single message is given as context.
+		messages = messages[len(messages)-1:]
+	}
+
 	// Prepare the request data to invoke the QueryLLMChat method in the service package
 	var requestData data.ChatRequest
 	requestData.Model = modelName

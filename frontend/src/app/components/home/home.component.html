@@ -23,22 +23,58 @@
           <div class="unrevealed rvItem" id="7">you today?</div>
         </div>
       </div>
-      <textarea
-        id="8"
-        class="queryInput unrevealed2 rvItem"
-        placeholder="Message {{ selectedModel!.name_trimmed }}"
-        [(ngModel)]="queryText"
-        [class.disabled]="isDisabled"
-        (input)="onTextAreaInput()"
-        [disabled]="isDisabled"
-        [placeholder]="
-          isDisabled
-            ? 'Generating response...'
-            : 'Message ' + selectedModel?.name_trimmed
-        "
-        (keydown)="sendQueryKeydown($event)"
-        #queryTextArea
-      ></textarea>
+      <div class="queryOuterContainer" [class.inactive]="!hasFiles">
+        @if (files.length > 0) {
+          <div class="attachmentsContainer">
+            @for (file of files; track $index) {
+              <div class="attachmentFrame">
+                <div class="attachmentImage"><img [src]="'data:image/jpeg;base64,' + this.images[$index]"/></div>
+                <div class="attachmentInfo">
+                  <div class="attachmentName">{{ file.name }}</div>
+                  <div class="attachmentType">{{ file.type }}</div>
+                </div>
+                <div class="removeAttachment" (click)="removeFile($index)"><span class="material-symbols-rounded closeSymbol">
+                  close
+                  </span></div>
+              </div>
+            }
+          </div>
+        }
+        <div class="queryInputBorder">
+          <textarea
+          id="8"
+          class="queryInput unrevealed2 rvItem"
+          placeholder="Message {{ selectedModel!.name_trimmed }}"
+          [(ngModel)]="queryText"
+          [class.disabled]="isDisabled"
+          (input)="onTextAreaInput()"
+          [disabled]="isDisabled"
+          [placeholder]="
+            isDisabled
+              ? 'Generating response...'
+              : 'Message ' + selectedModel?.name_trimmed
+          "
+          (keydown)="sendQueryKeydown($event)"
+          #queryTextArea
+        ></textarea>
+        <div class="inputBorderContainer">
+          <input type="file" accept=".png, .jpg, .webp, .jpeg, .avif, .heic" (change)="onFileUpload($event)" #fileUpload>
+          <div class="inputButton unrevealed rvItem" id="9" (click)="fileUpload.click()">
+            <span class="material-symbols-rounded">
+              upload
+              </span>
+            Upload Image
+          </div>
+          <div class="interruptButtonContainer unrevealed rvItem" id="10">
+            <div class="interruptButtonOuter" (click)="simulateEnterPress()">
+              <div class="sendButton"><span class="material-symbols-rounded sendIcon">
+                send
+                </span></div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

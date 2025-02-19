@@ -1,18 +1,34 @@
 <div class="container">
   <div class="modelContainer">
-    <div class="currentModel tr" (click)="toggleModelSelector()">
+      <div class="currentModel tr" (click)="toggleModelSelector()">
       {{ selectedModel!.name_trimmed }}
-      <!--<span class="modelSize">{{ selectedModel!.details.parameter_size }}</span>-->
+      <span class="modelSize modelSizeSelected">{{ selectedModel!.details.parameter_size }}</span>
       <span class="material-symbols-rounded downCaret" id="downCaret"
         >keyboard_arrow_down</span
       >
     </div>
-    <div class="modelDropdown inactive" id="modelDropdown">
-      @for (model of models!.models; track $index) {
-        <div class="model" (click)="setModel(model)">
-          {{ model.name_trimmed }} <span class="modelTags"><span class="modelQuantization modelSize"> {{ model.details.quantization_level }}</span><span class="modelSize">{{ model.details.parameter_size }}</span></span>
-        </div>
-      }
+      <div class="modelDropdown inactive" id="modelDropdown">
+        @for (model of groupedModels; track model; let count = $index;) {
+          @if (model.length == 1) {
+            <div class="model" (click)="setModel(model[0])">
+              {{ model[0].name_trimmed }} <span class="modelTags"><span class="modelQuantization modelSize"> {{ model[0].details.quantization_level }}</span><span class="modelSize">{{ model[0].details.parameter_size }}</span></span>
+            </div>
+          } @else {
+            <div class="modelCategory" id="modelCategory{{count}}" (click)="expand(count)">
+              <span class="categoryHeading">
+                {{ model[0].name_trimmed }}
+                <span class="material-symbols-rounded caret" id="caret{{count}}"
+                >keyboard_arrow_down</span
+                >
+              </span>
+              <div class="innerModels" id="innerModels{{count}}">
+                @for (innerModel of model; track $index) {
+                  <div class="model" (click)="setModel(innerModel)"><span class="modelTags"><span class="modelQuantization modelSize">{{ innerModel.details.quantization_level }}</span><span class="modelSize">{{ innerModel.details.parameter_size }}</span></span></div>
+                }
+              </div>
+            </div>
+          }
+        }
     </div>
   </div>
 </div>

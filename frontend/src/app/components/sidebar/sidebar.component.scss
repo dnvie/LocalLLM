@@ -60,9 +60,8 @@
   align-items: center;
   padding: 0px 0px 0px 15px;
   gap: 3px;
-  font-family: "Inter Display";
-  font-size: 14px;
-  letter-spacing: 0px;
+  font-size: 15px;
+  letter-spacing: -0.25px;
   font-weight: 600;
   color: #000000;
   justify-content: space-between;
@@ -102,14 +101,14 @@
   margin-bottom: 7px;
   border-radius: 13px;
   box-sizing: border-box;
-  font-family: "Inter Display";
   font-size: 15px;
-  letter-spacing: -0.15px;
   font-weight: 400;
+  letter-spacing: -0.4px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: #00000070;
+  user-select: none;
 }
 
 .chatWrapper:hover {
@@ -167,7 +166,6 @@
   padding: 20px 0px 20px 10px;
   border-radius: 13px;
   box-sizing: border-box;
-  font-family: "Inter Display";
   font-size: 16px;
   font-weight: 500;
   letter-spacing: -0.25px;
@@ -194,11 +192,11 @@
 }
 
 .editItem {
-  background-color: #c4c4c4;
-  color: #000000;
+  border: 0.5px solid rgb(60, 60, 60);
+  color: #2f2f2f;
 }
 
 .deleteItem {
-  background-color: #0c0c0c;
-  color: #ffffff;
+  border: 0.5px solid rgb(219, 16, 16);
+  color: rgb(219, 16, 16);
 }

@@ -28,9 +28,12 @@ export class HomeComponent implements OnInit {
   messages: Message[] = [];
 
   queryText: String = "";
+  images: String[] = [];
+  files: File[] = [];
   selectedModel: Model | null = null;
   response: String = "";
   isDisabled: boolean = false;
+  hasFiles: boolean = this.files.length != 0;
 
   @ViewChild("queryTextArea") queryTextAreaRef!: ElementRef;
   @ViewChild("chatContainer") chatContainerRef!: ElementRef;
@@ -81,6 +84,17 @@ export class HomeComponent implements OnInit {
       () => document.getElementById("8")!.classList.remove("unrevealed2"),
       110 - 30,
     );
+
+    setTimeout(
+      () => document.getElementById("9")!.classList.remove("unrevealed"),
+      150 - 30,
+    );
+
+    setTimeout(
+      () => document.getElementById("10")!.classList.remove("unrevealed"),
+      170 - 30,
+    );
+
   }
 
   remove() {
@@ -101,10 +115,10 @@ export class HomeComponent implements OnInit {
       } else {
         event.preventDefault();
         this.router.navigate([`/chat/new`], {
-          state: { query: this.queryText },
+          state: { query: this.queryText, images: this.images },
         });
-
         this.queryText = "";
+        this.images = [];
         const textarea: HTMLTextAreaElement =
           this.queryTextAreaRef.nativeElement;
         textarea.style.height = "auto";
@@ -112,11 +126,23 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  simulateEnterPress() {
+    const event = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      code: 'Enter',
+      keyCode: 13,
+      which: 13,
+      bubbles: true
+    });
+  
+    this.sendQueryKeydown(event);
+  }
+
   onTextAreaInput() {
     const textarea: HTMLTextAreaElement = this.queryTextAreaRef.nativeElement;
     textarea.style.height = "auto";
     if (textarea.scrollHeight > textarea.clientHeight) {
-      textarea.style.height = Math.min(textarea.scrollHeight, 350) + "px";
+      textarea.style.height = Math.min(textarea.scrollHeight, 700) + "px";
     }
   }
 
@@ -125,6 +151,31 @@ export class HomeComponent implements OnInit {
       const chatContainer = this.chatContainerRef.nativeElement;
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }, 0);
+  }
+
+  onFileUpload(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.files = [file]
+      this.hasFiles = this.files.length > 0
+      const reader = new FileReader();
+      
+      reader.onload = (e: any) => {
+        const base64String = e.target.result;
+        const base64Data = base64String.split(",")[1];
+        this.images = [base64Data];
+      };
+      reader.readAsDataURL(file);
+      event.target.value = "";
+    } else {
+      console.log("No file selected");
+    }
+  }
+
+  removeFile(index: number) {
+    this.files.splice(index, 1);
+    this.images.splice(index, 1);
+    this.hasFiles = this.files.length > 0
   }
 
   ngOnInit(): void {
