@@ -115,7 +115,7 @@ export class HomeComponent implements OnInit {
       } else {
         event.preventDefault();
         this.router.navigate([`/chat/new`], {
-          state: { query: this.queryText, images: this.images },
+          state: { query: this.queryText, images: this.images, attachment_name: this.files[0]?.name, attachment_type: this.files[0]?.type },
         });
         this.queryText = "";
         this.images = [];

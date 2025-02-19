@@ -34,6 +34,17 @@
                   [data]="message.content"
                 ></markdown>
               </div>
+              @if (message.attachment_name) {
+                <div class="attachmentFrame">
+                  <div class="attachmentImagePlaceholder"><span class="material-symbols-rounded boldSymbol">
+                    image
+                    </span></div>
+                  <div class="attachmentInfo">
+                    <div class="attachmentName">{{ message.attachment_name }}</div>
+                    <div class="attachmentType">{{ message.attachment_type }}</div>
+                  </div>
+                </div>
+              }
             </div>
           }
         }

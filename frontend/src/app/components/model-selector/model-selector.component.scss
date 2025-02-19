@@ -70,12 +70,12 @@
 
 .downCaret {
   margin-left: 0px;
-  transition: all 0.15s cubic-bezier(0.74, -0.01, 0.26, 1.04);
+  transition: all 0.1s cubic-bezier(0.74, -0.01, 0.26, 1.04);
 }
 
 #downCaret.rotate {
   transform: rotate(180deg);
-  transition: all 0.15s cubic-bezier(0.74, -0.01, 0.26, 1.04);
+  transition: all 0.1s cubic-bezier(0.74, -0.01, 0.26, 1.04);
 }
 
 .modelDropdown {
@@ -197,11 +197,11 @@
 
 .caret {
   transform: rotate(0deg);
-  transition: all 0.15s cubic-bezier(0.74, -0.01, 0.26, 1.04);
+  transition: all 0.1s cubic-bezier(0.74, -0.01, 0.26, 1.04);
 }
 
 .caret.active {
   transform: rotate(180deg);
   margin-left: 0px;
-  transition: all 0.15s cubic-bezier(0.74, -0.01, 0.26, 1.04);
+  transition: all 0.1s cubic-bezier(0.74, -0.01, 0.26, 1.04);
 }

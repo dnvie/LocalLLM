@@ -4,6 +4,8 @@ export interface Message {
   content: string;
   images?: string[];
   interrupted: boolean;
+  attachment_name?: string;
+  attachment_type?: string;
 }
 
 export interface StreamingMessage {

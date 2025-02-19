@@ -61,7 +61,6 @@ export class ModelSelectorComponent implements OnInit {
     this.modelService.models$.subscribe((models) => {
       this.models = models;
       this.groupedModels = this.groupModels();
-      console.log(this.groupedModels);
     });
 
     this.modelService.selectedModel$.subscribe((model) => {
@@ -102,6 +101,7 @@ export class ModelSelectorComponent implements OnInit {
       document.getElementById("downCaret")!.classList.remove("rotate");
       dropdown.classList.add("inactive");
       this.collapseAll();
+      this.isListExpanded = false;
     }
   }
 }

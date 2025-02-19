@@ -26,8 +26,10 @@ type ModelDetails struct {
 }
 
 type QueryRequest struct {
-	Query  string   `json:"query"`
-	Images []string `json:"images"`
+	Query          string   `json:"query"`
+	Images         []string `json:"images"`
+	AttachmentName string   `json:"attachment_name"`
+	AttachmentType string   `json:"attachment_type"`
 }
 
 type Request struct {
@@ -55,11 +57,13 @@ type ChatResponse struct {
 }
 
 type Message struct {
-	Model       string   `json:"model"`
-	Role        string   `json:"role"`
-	Content     string   `json:"content"`
-	Images      []string `json:"images"`
-	Interrupted bool     `json:"interrupted"`
+	Model          string   `json:"model"`
+	Role           string   `json:"role"`
+	Content        string   `json:"content"`
+	Images         []string `json:"images"`
+	AttachmentName string   `json:"attachment_name"`
+	AttachmentType string   `json:"attachment_type"`
+	Interrupted    bool     `json:"interrupted"`
 }
 
 type Chat struct {

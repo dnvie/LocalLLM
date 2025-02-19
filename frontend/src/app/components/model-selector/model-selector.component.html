@@ -2,7 +2,10 @@
   <div class="modelContainer">
       <div class="currentModel tr" (click)="toggleModelSelector()">
       {{ selectedModel!.name_trimmed }}
-      <span class="modelSize modelSizeSelected">{{ selectedModel!.details.parameter_size }}</span>
+      @if (isListExpanded) {
+        <span class="modelQuantization modelSize"> {{ selectedModel!.details.quantization_level }}</span>
+        <span class="modelSize">{{ selectedModel!.details.parameter_size }}</span>
+      }
       <span class="material-symbols-rounded downCaret" id="downCaret"
         >keyboard_arrow_down</span
       >

@@ -132,7 +132,7 @@ export class StreamingService {
     }
   }
 
-  sendQuery(selectedModel: string, queryText: string, images: string[],  chatId: string) {
+  sendQuery(selectedModel: string, queryText: string, images: string[], attachment_name: string, attachment_type: string, chatId: string,) {
     if (!queryText || !selectedModel) {
       console.log("Please provide both a query and a (valid) model");
       return;
@@ -154,7 +154,7 @@ export class StreamingService {
 
     this.streamingMessage.next(streamingMessage);
 
-    this.streamText(selectedModel, queryText, images, chatId).subscribe({
+    this.streamText(selectedModel, queryText, images, attachment_name, attachment_type, chatId).subscribe({
       next: ({ chatID, chunk }) => {
         if (this.router.url === "/chat/new") {
           this.router.navigate([`/chat/${chatID}`]);
@@ -215,14 +215,15 @@ export class StreamingService {
     model: string,
     query: string,
     images: string[],
+    attachment_name: string,
+    attachment_type: string,
     chatID: string | null,
   ): Observable<{ chatID: string | null; chunk: string }> {
     return new Observable((observer) => {
       this.activeRequestController = new AbortController();
       const signal = this.activeRequestController.signal;
-
       const url = `${baseUrl}/chat/${model}/${chatID || "new"}`;
-      const body = { query, images };
+      const body = { query, images, attachment_name, attachment_type };
       const encoder = new TextDecoder();
 
       fetch(url, {

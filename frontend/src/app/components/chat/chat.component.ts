@@ -43,6 +43,8 @@ export class ChatComponent implements OnInit {
   streamingMessage: StreamingMessage | null = null;
   isAtBottom: boolean = true;
   files: File[] = [];
+  attachment_name: string = "";
+  attachment_type: string = "";
   hasFiles: boolean = this.files.length != 0;
 
   @ViewChild("queryTextArea") queryTextAreaRef!: ElementRef;
@@ -119,6 +121,8 @@ export class ChatComponent implements OnInit {
         role: "user",
         //images: this.images,
         interrupted: false,
+        attachment_name: this.attachment_name,
+        attachment_type: this.attachment_type,
       });
       this.scrollToBottom();
       sessionStorage.setItem(this.chatID!, JSON.stringify(this.messages));
@@ -127,6 +131,8 @@ export class ChatComponent implements OnInit {
         this.selectedModel.name,
         this.queryText,
         this.images,
+        this.attachment_name,
+        this.attachment_type,
         this.chatID!,
       );
     }
@@ -190,6 +196,8 @@ export class ChatComponent implements OnInit {
         const base64String = e.target.result;
         const base64Data = base64String.split(",")[1];
         this.images = [base64Data];
+        this.attachment_name = file.name;
+        this.attachment_type = file.type;
       };
       reader.readAsDataURL(file);
       event.target.value = "";
@@ -244,6 +252,8 @@ export class ChatComponent implements OnInit {
       query?: string;
       messages?: Message[];
       images?: string[];
+      attachment_name?: string;
+      attachment_type?: string;
     };
 
     if (navigationState.messages) {
@@ -308,6 +318,8 @@ export class ChatComponent implements OnInit {
       if (navigationState.query) {
         this.queryText = navigationState.query;
         this.images = navigationState.images || [];
+        this.attachment_name = navigationState.attachment_name || "";
+        this.attachment_type = navigationState.attachment_type || "";
         this.sendQuery();
         this.queryText = "";
         history.replaceState({}, document.title);
