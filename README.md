@@ -4,15 +4,19 @@ Interact with local LLM models running in Ollama with an easy to use and familia
 
 Home:
 
-![image](https://github.com/user-attachments/assets/7283eb08-8714-4b96-8bfc-ec4aee409708)
+![image](https://github.com/user-attachments/assets/6ab1a08e-27b5-4012-91e3-955bf7901296)
 
 Switching models during a conversation (+markdown and math-mode support):
 
-![image](https://github.com/user-attachments/assets/cbf90518-0b2a-4896-bc81-954bab6bc6aa)
+![image](https://github.com/user-attachments/assets/a736590f-958f-4fd9-8ee2-61e3f926fbd5)
 
-Model Switcher:
+Describing images with multi-modal LLMs:
 
-![image](https://github.com/user-attachments/assets/f436ff2f-b11f-4776-9db4-6fe17700dbbc)
+![image](https://github.com/user-attachments/assets/88b22eb0-4c8b-4642-97c0-95ec70c76869)
+
+Model switcher + chat editing:
+![image](https://github.com/user-attachments/assets/4a343d12-5d1e-49a5-99c6-89fed4c18899)
+
 
 
 
@@ -38,7 +42,6 @@ Planned features:
 - Ability to upload files
 - User system
 - Vector database for embeddings
-- Support for multimodal models (Image, Speech, etc.)
 - Ability to pull new models directly from within the UI
 - Ability to set a default model
 - Temporary Chats
