@@ -89,14 +89,16 @@ export class ChatComponent implements OnInit {
         return;
       } else {
         event.preventDefault();
-        this.sendQuery();
-        this.queryText = "";
-        this.images = [];
-        this.hasFiles = false;
-        this.files = [];
-        const textarea: HTMLTextAreaElement =
+        if (this.queryText.trim() !== "") {
+          this.sendQuery();
+          this.queryText = "";
+          this.images = [];
+          this.hasFiles = false;
+          this.files = [];
+          const textarea: HTMLTextAreaElement =
           this.queryTextAreaRef.nativeElement;
-        textarea.style.height = "auto";
+          textarea.style.height = "auto";
+        }
       }
     }
   }
@@ -115,17 +117,28 @@ export class ChatComponent implements OnInit {
 
   sendQuery() {
     if (this.selectedModel && this.queryText) {
+      var currentMessages = JSON.parse(JSON.stringify(this.messages));
+      var currentImage = JSON.parse(JSON.stringify(this.images));
+      currentMessages.push({
+        model: this.selectedModel.name,
+        content: this.queryText.toString(),
+        role: "user",
+        images: [],
+        interrupted: false,
+        attachment_name: this.attachment_name,
+        attachment_type: this.attachment_type,
+      });
       this.messages.push({
         model: this.selectedModel.name,
         content: this.queryText.toString(),
         role: "user",
-        //images: this.images,
+        images: currentImage,
         interrupted: false,
         attachment_name: this.attachment_name,
         attachment_type: this.attachment_type,
       });
       this.scrollToBottom();
-      sessionStorage.setItem(this.chatID!, JSON.stringify(this.messages));
+      sessionStorage.setItem(this.chatID!, JSON.stringify(currentMessages));
       this.chatService.setIsDisabled(true);
       this.streamingService.sendQuery(
         this.selectedModel.name,
@@ -135,6 +148,10 @@ export class ChatComponent implements OnInit {
         this.attachment_type,
         this.chatID!,
       );
+      this.removeFile(0)
+      this.attachment_name = "";
+      this.attachment_type = "";
+      this.images = [];
     }
   }
 
@@ -228,8 +245,14 @@ export class ChatComponent implements OnInit {
         if (this.chatID && updatedChatId === this.chatID) {
           const savedMessages = sessionStorage.getItem(this.chatID);
           if (savedMessages) {
-            this.messages = JSON.parse(savedMessages);
+            const sessionMessages = JSON.parse(savedMessages);
+            for (let i = 0; i < this.messages.length; i++) {
+              var currentImage = this.messages[i].images;
+              sessionMessages[i].images = currentImage;
+            }
+            this.messages = sessionMessages
             this.cdRef.detectChanges();
+            this.scrollToBottom(true);
           }
         }
       }
@@ -272,7 +295,12 @@ export class ChatComponent implements OnInit {
             if (status[this.chatID!]) {
               const savedMessages = sessionStorage.getItem(this.chatID!);
               if (savedMessages) {
-                this.messages = JSON.parse(savedMessages);
+                const sessionMessages = JSON.parse(savedMessages);
+                for (let i = 0; i < this.messages.length; i++) {
+                  var currentImage = this.messages[i].images;
+                  sessionMessages[i].images = currentImage;
+                }
+                this.messages = sessionMessages
                 this.cdRef.detectChanges();
                 this.scrollToBottom(true);
               }
@@ -295,9 +323,13 @@ export class ChatComponent implements OnInit {
                 console.error("Error loading chat:", err);
               },
               complete: () => {
+                var currentMessages = JSON.parse(JSON.stringify(this.messages));
+                for (let i = 0; i < this.messages.length; i++) {
+                  currentMessages[i].images = [];
+                }
                 sessionStorage.setItem(
                   this.chatID!,
-                  JSON.stringify(this.messages),
+                  JSON.stringify(currentMessages),
                 );
                 this.cdRef.detectChanges();
               },

@@ -35,10 +35,16 @@
                 ></markdown>
               </div>
               @if (message.attachment_name) {
-                <div class="attachmentFrame">
-                  <div class="attachmentImagePlaceholder"><span class="material-symbols-rounded boldSymbol">
-                    image
-                    </span></div>
+                <div class="attachmentFrame messageAttachment">
+                  @if (message.images!.length > 0) {
+                    <div class="attachmentImage">
+                      <img [src]="'data:image/jpeg;base64,' + message.images![0]"/>
+                    </div>
+                  } @else {
+                    <div class="attachmentImagePlaceholder"><span class="material-symbols-rounded boldSymbol">
+                      image
+                      </span></div>  
+                  }
                   <div class="attachmentInfo">
                     <div class="attachmentName">{{ message.attachment_name }}</div>
                     <div class="attachmentType">{{ message.attachment_type }}</div>
@@ -110,15 +116,15 @@
             [disabled]="isDisabled"
             [placeholder]="
               isDisabled
-                ? 'Generating response...'
+                ? (this.streamingMessage!.isGenerating ? 'Loading model...' : 'Generating response...')
                 : 'Message ' + selectedModel?.name_trimmed
             "
             (keydown)="sendQueryKeydown($event)"
             #queryTextArea
           ></textarea>
           <div class="inputBorderContainer">
-            <input type="file" accept=".png, .jpg, .webp, .jpeg, .avif" (change)="onFileUpload($event)" #fileUpload>
-            <div class="inputButton unrevealed rvItem" id="9" (click)="fileUpload.click()">
+            <input type="file" accept=".png, .jpg, .webp, .jpeg, .avif" [class.disabled]="isDisabled" (change)="onFileUpload($event)" #fileUpload>
+            <div class="inputButton unrevealed rvItem" [class.disabled]="isDisabled" id="9" (click)="fileUpload.click()">
               <span class="material-symbols-rounded">
                 upload
                 </span>
@@ -132,7 +138,7 @@
               </div>
             } @else {
               <div class="interruptButtonContainer">
-                <div class="interruptButtonOuter" (click)="simulateEnterPress()">
+                <div class="interruptButtonOuter" [class.disabled]="this.queryText.length == 0" (click)="simulateEnterPress()">
                   <div class="sendButton"><span class="material-symbols-rounded sendIcon">
                     send
                     </span></div>

@@ -87,7 +87,6 @@ app-sidebar-collapse-button {
   display: flex;
   align-items: flex-end;
   flex-direction: column;
-  gap: 10px;
 }
 
 .question {
@@ -167,6 +166,11 @@ input[type="file"] {
   display: none;
 }
 
+input[type="file"].disabled {
+  user-select: none;
+  pointer-events: none;
+}
+
 .queryInput {
   bottom: 0px;
   width: var(--width);
@@ -214,11 +218,15 @@ input[type="file"] {
   height: fit-content;
   padding: 6px;
   border: 0.5px solid rgb(196, 196, 196);
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(15px) saturate(190%);
   border-radius: 16px;
   display: flex;
   gap: 10px;
-  bottom: 20px;
+}
+
+.messageAttachment {
+  bottom: 10px;
 }
 
 .attachmentInfo {
@@ -339,6 +347,12 @@ input[type="file"] {
   cursor: pointer;
   background-color: #f4f4f4;
 }
+
+.inputButton.disabled {
+  opacity: 0.5;
+  user-select: none;
+  pointer-events: none;
+}
  
 
 .scrollDownHelper {
@@ -412,6 +426,12 @@ input[type="file"] {
 .interruptButtonOuter:hover {
   cursor: pointer;
   background-color: #1c1c1c;
+}
+
+.interruptButtonOuter.disabled {
+  opacity: 0.25;
+  user-select: none;
+  pointer-events: none;
 }
 
 .interruptButton {

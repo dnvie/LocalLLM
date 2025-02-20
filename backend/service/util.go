@@ -2,13 +2,19 @@ package service
 
 import (
 	"LocalLLM/data"
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"image/jpeg"
 	"io"
 	"net/http"
 	"os"
 	"sort"
 	"strings"
+
+	"github.com/disintegration/imaging"
+	"github.com/rwcarlsen/goexif/exif"
 )
 
 // Loads the list of models from the Ollama server.
@@ -64,6 +70,57 @@ func IsValidModel(model string) (bool, string) {
 		}
 	}
 	return false, ""
+}
+
+func GenerateThumbnail(base64string []string) string {
+	if len(base64string) == 0 {
+		return ""
+	}
+	imgData, err := base64.StdEncoding.DecodeString(base64string[0])
+	if err != nil {
+		return ""
+	}
+
+	img, err := imaging.Decode(bytes.NewReader(imgData))
+	if err != nil {
+		return ""
+	}
+
+	exifData, err := exif.Decode(bytes.NewReader(imgData))
+	if err == nil {
+		orientation, err := exifData.Get(exif.Orientation)
+		if err == nil {
+			switch orientation.String() {
+			case "3":
+				img = imaging.Rotate180(img)
+			case "6":
+				img = imaging.Rotate270(img)
+			case "8":
+				img = imaging.Rotate90(img)
+			}
+		}
+	}
+
+	width := img.Bounds().Dx()
+	height := img.Bounds().Dy()
+	var newWidth, newHeight int
+	if width < height {
+		newWidth = 50
+		newHeight = int(float64(height) / float64(width) * 50)
+	} else {
+		newHeight = 50
+		newWidth = int(float64(width) / float64(height) * 50)
+	}
+	resizedImg := imaging.Resize(img, newWidth, newHeight, imaging.Lanczos)
+
+	var buffer bytes.Buffer
+	err = jpeg.Encode(&buffer, resizedImg, nil)
+	if err != nil {
+		return ""
+	}
+
+	encodedThumbnail := base64.StdEncoding.EncodeToString(buffer.Bytes())
+	return encodedThumbnail
 }
 
 func QueryChatsFromUser(userID string) ([]data.Chat, error) {

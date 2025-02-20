@@ -136,7 +136,7 @@ func QueryLLMChat(w http.ResponseWriter, reqData data.ChatRequest, chatID string
 	}
 
 	// Save the complete response to the database
-	data.InsertMessage(chatID, "assistant", fullResponse, reqData.Model, "", "", false)
+	data.InsertMessage(chatID, "assistant", fullResponse, reqData.Model, "", "", "", false)
 
 	return nil
 }

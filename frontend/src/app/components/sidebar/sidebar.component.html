@@ -5,10 +5,14 @@
     </div>
     <div class="newChatContainer">
       <div class="chatsHeading">
-        @if (chats!.chats.length != 1) {
-          {{ chats!.chats.length }} Chats
+        @if (!chats.chats) {
+          No Chats
         } @else {
-          {{ chats!.chats.length }} Chat
+          @if (chats!.chats.length != 1) {
+            {{ chats!.chats.length }} Chats
+          } @else {
+            {{ chats!.chats.length }} Chat
+          }
         }
         <span class="material-symbols-rounded newChat" (click)="createNewChat()"
           >add</span

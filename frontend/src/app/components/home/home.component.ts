@@ -45,7 +45,7 @@ export class HomeComponent implements OnInit {
   ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        this.remove();
+        //this.remove();
       }
     });
   }
@@ -97,12 +97,12 @@ export class HomeComponent implements OnInit {
 
   }
 
-  remove() {
+  /*remove() {
     for (let i = 1; i < 8; i++) {
       document.getElementById(i.toString())!.classList.add("unrevealed");
     }
     document.getElementById("8")!.classList.add("unrevealed2");
-  }
+  }*/
 
   sendQueryKeydown(event: KeyboardEvent) {
     if (

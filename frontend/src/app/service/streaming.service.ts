@@ -58,10 +58,16 @@ export class StreamingService {
   private saveMessageToSession(message: Message, chatID: string) {
     if (this.messageSaved) return;
     
-    const existingMessages: Message[] = JSON.parse(
+    var existingMessages: Message[] = JSON.parse(
       sessionStorage.getItem(chatID) || "[]",
     );
+
     existingMessages.push(message);
+
+    for (let i = 0; i < existingMessages.length; i++) {
+      existingMessages[i].images = [];
+    }
+
     sessionStorage.setItem(
       chatID,
       JSON.stringify(existingMessages),
@@ -92,7 +98,6 @@ export class StreamingService {
               lastMessage.role === currentMessage.message.role
             ) {
               lastMessage.interrupted = true;
-              
               sessionStorage.setItem(
                 currentMessage.chatID,
                 JSON.stringify(existingMessages)

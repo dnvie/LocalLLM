@@ -45,8 +45,9 @@ func InitDb() {
 		model TEXT,
 		timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 		interrupted BOOLEAN NOT NULL DEFAULT FALSE,
-		attachment_name TEXT,
-		attachment_type TEXT,
+		image TEXT NOT NULL DEFAULT "",
+		attachment_name TEXT NOT NULL DEFAULT "",
+		attachment_type TEXT NOT NULL DEFAULT "",
 		FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
 	);`
 	_, err = Db.Exec(messagesTable)
@@ -95,9 +96,9 @@ func InsertChat(chatID, userID, title string) error {
 }
 
 // Insert a message into the database.
-func InsertMessage(chatID, role, content, model, attachment_name, attachment_type string, interrupted bool) error {
-	query := `INSERT INTO messages (chat_id, role, content, model, attachment_name, attachment_type, interrupted) VALUES (?, ?, ?, ?, ?, ?, ?);`
-	_, err := Db.Exec(query, chatID, role, content, model, attachment_name, attachment_type, interrupted)
+func InsertMessage(chatID, role, content, model, image, attachment_name, attachment_type string, interrupted bool) error {
+	query := `INSERT INTO messages (chat_id, role, content, model, image, attachment_name, attachment_type, interrupted) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`
+	_, err := Db.Exec(query, chatID, role, content, model, image, attachment_name, attachment_type, interrupted)
 	return err
 }
 
@@ -128,11 +129,10 @@ func DeleteChat(chatID string) error {
 }
 
 // Query all messages from a chat, given the chat ID.
-func QueryMessagesFromChat(chatID string) ([]Message, error) {
+func QueryMessagesFromChatWithoutImages(chatID string) ([]Message, error) {
 	query := `SELECT role, content, model, timestamp, attachment_name, attachment_type, interrupted FROM messages WHERE chat_id = ? ORDER BY timestamp;`
 	rows, err := Db.Query(query, chatID)
 	if err != nil {
-		fmt.Println("1")
 		return nil, err
 	}
 	defer rows.Close()
@@ -155,7 +155,36 @@ func QueryMessagesFromChat(chatID string) ([]Message, error) {
 			AttachmentType: attachment_type,
 		})
 	}
+	return messages, nil
+}
 
+func QueryMessagesFromChat(chatID string) ([]Message, error) {
+	query := `SELECT role, content, model, timestamp, image, attachment_name, attachment_type, interrupted FROM messages WHERE chat_id = ? ORDER BY timestamp;`
+	rows, err := Db.Query(query, chatID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var messages []Message
+	for rows.Next() {
+		var role, content, model, image, attachment_name, attachment_type string
+		var timestamp time.Time
+		var interrupted bool
+		if err := rows.Scan(&role, &content, &model, &timestamp, &image, &attachment_name, &attachment_type, &interrupted); err != nil {
+			return nil, err
+		}
+
+		messages = append(messages, Message{
+			Model:          model,
+			Role:           role,
+			Content:        content,
+			Interrupted:    interrupted,
+			Images:         []string{image},
+			AttachmentName: attachment_name,
+			AttachmentType: attachment_type,
+		})
+	}
 	return messages, nil
 }
 

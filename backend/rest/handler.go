@@ -134,22 +134,25 @@ func ProcessChat(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Generate the thumbnail that we store in the database
+	img := service.GenerateThumbnail(req.Images)
+
 	// Insert the user message into the database
-	err := data.InsertMessage(chatID, "user", req.Query, modelName, req.AttachmentName, req.AttachmentType, false)
+	err := data.InsertMessage(chatID, "user", req.Query, modelName, img, req.AttachmentName, req.AttachmentType, false)
 	if err != nil {
 		http.Error(w, "Error processing chat", http.StatusInternalServerError)
 		return
 	}
 
 	// Retrieve all messages sent in this chat (including the current query that was just stored)
-	messages, err := data.QueryMessagesFromChat(chatID)
+	messages, err := data.QueryMessagesFromChatWithoutImages(chatID)
 	if err != nil {
 		http.Error(w, "Error processing chat", http.StatusInternalServerError)
 		return
 	}
 
 	if len(req.Images) > 0 {
-		// Attached images are not stored in the database, therefore we have to append any images to the last message, as they are ommited when loading the messages from the database.
+		// Append the full-size image to the query, instead of the small thumbnail that is stored in the database.
 		messages[len(messages)-1].Images = req.Images
 
 		// If the query contains an image, we omit the chat history, as the LLM (apparently) can only process an image if a single message is given as context.
