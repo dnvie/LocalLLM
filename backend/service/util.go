@@ -145,3 +145,7 @@ func DeleteChat(chatID string) error {
 func AddInterruptedMessage(chatID string, message data.Message) error {
 	return data.AddInterruptedMessage(chatID, message)
 }
+
+func GetImagesFromChat(chatID string) (data.Images, error) {
+	return data.GetImagesFromChat(chatID)
+}

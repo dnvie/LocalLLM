@@ -96,7 +96,7 @@ export class ChatComponent implements OnInit {
           this.hasFiles = false;
           this.files = [];
           const textarea: HTMLTextAreaElement =
-          this.queryTextAreaRef.nativeElement;
+            this.queryTextAreaRef.nativeElement;
           textarea.style.height = "auto";
         }
       }
@@ -111,7 +111,7 @@ export class ChatComponent implements OnInit {
       which: 13,
       bubbles: true
     });
-  
+
     this.sendQueryKeydown(event);
   }
 
@@ -195,8 +195,8 @@ export class ChatComponent implements OnInit {
       const isBottom =
         Math.abs(
           chatContainer.scrollHeight -
-            chatContainer.scrollTop -
-            chatContainer.clientHeight,
+          chatContainer.scrollTop -
+          chatContainer.clientHeight,
         ) < 30;
       this.isAtBottom = isBottom;
     }
@@ -208,7 +208,7 @@ export class ChatComponent implements OnInit {
       this.files = [file]
       this.hasFiles = this.files.length > 0
       const reader = new FileReader();
-      
+
       reader.onload = (e: any) => {
         const base64String = e.target.result;
         const base64Data = base64String.split(",")[1];
@@ -335,8 +335,31 @@ export class ChatComponent implements OnInit {
               },
             });
           } else {
-            console.log();
             this.messages = JSON.parse(sessionStorage.getItem(this.chatID!)!);
+
+            let count = 0;
+            for (let i = 0; i < this.messages.length; i++) {
+              if (this.messages[i].attachment_name !== "") {
+                count++;
+              }
+            }
+            if (count > 0) {
+              this.chatService.getImages(this.chatID!).subscribe({
+                next: (data) => {
+                  let index = 0;
+                  for (let i = 0; i < this.messages.length; i++) {
+                    if (this.messages[i].attachment_name !== "") {
+                      this.messages[i].images = [data.images_array[index]];
+                      index++;
+                    }
+                  }
+                  this.cdRef.detectChanges();
+                },
+                error: (err) => {
+                  console.error("Error loading images:", err);
+                },
+              });
+            }
             this.scrollToBottom();
           }
         } else {

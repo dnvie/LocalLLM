@@ -224,3 +224,19 @@ func AddInterruptedMessage(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+func GetImages(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	chatID := chi.URLParam(r, "id")
+	images, err := service.GetImagesFromChat(chatID)
+	if err != nil {
+		http.Error(w, "Error getting images", http.StatusInternalServerError)
+		return
+	}
+	imagesJSON, err := json.Marshal(images)
+	if err != nil {
+		http.Error(w, "Error getting images", http.StatusInternalServerError)
+		return
+	}
+	w.Write(imagesJSON)
+}

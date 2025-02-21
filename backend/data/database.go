@@ -234,3 +234,26 @@ func AddInterruptedMessage(chatID string, message Message) error {
 	_, err := Db.Exec(query, chatID, message.Role, message.Content, message.Model, message.Interrupted)
 	return err
 }
+
+func GetImagesFromChat(chatID string) (Images, error) {
+	query := `SELECT image FROM messages WHERE image != "" ORDER BY timestamp`
+
+	var images Images
+	rows, err := Db.Query(query, chatID)
+	if err != nil {
+		fmt.Println(err)
+		return images, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var image string
+		if err := rows.Scan(&image); err != nil {
+			fmt.Println(err)
+			return images, err
+		}
+
+		images.ImagesArray = append(images.ImagesArray, image)
+	}
+	return images, nil
+}

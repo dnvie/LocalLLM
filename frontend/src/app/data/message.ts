@@ -14,3 +14,7 @@ export interface StreamingMessage {
   isGenerating: boolean;
   isResponding: boolean;
 }
+
+export interface Images {
+  images_array: string[];
+}

@@ -20,6 +20,7 @@ func Serve() {
 	r.Get("/models", GetModels)
 	r.Get("/chats/{id}", GetChats)
 	r.Get("/chat/{id}", GetChat)
+	r.Get("/chat/{id}/getImages", GetImages)
 	//r.Post("/query/{model}", ProcessQuery) // currently not being used
 	r.Post("/chat/{model}/{id}", ProcessChat)
 	r.Post("/addInterruptedMessage/{id}", AddInterruptedMessage)

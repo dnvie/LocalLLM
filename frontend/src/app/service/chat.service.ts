@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { Chats, Chat } from "../data/chat";
 import { HttpClient } from "@angular/common/http";
-import { Message } from "../data/message";
+import { Message, Images } from "../data/message";
 import { Observable } from "rxjs";
 
 const baseUrl = "http://localhost:80";
@@ -133,4 +133,8 @@ export class ChatService {
       console.warn(`Chat with ID ${chatID} not found.`);
     }
   }
+
+  getImages(chatID: string): Observable<Images> {
+    return this.http.get<Images>(`${baseUrl}/chat/${chatID}/getImages`);
+    }
 }

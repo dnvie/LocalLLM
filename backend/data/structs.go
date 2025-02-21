@@ -66,6 +66,10 @@ type Message struct {
 	Interrupted    bool     `json:"interrupted"`
 }
 
+type Images struct {
+	ImagesArray []string `json:"images_array"`
+}
+
 type Chat struct {
 	Id    string `json:"id"`
 	Title string `json:"title"`
