@@ -30,6 +30,9 @@ type QueryRequest struct {
 	Images         []string `json:"images"`
 	AttachmentName string   `json:"attachment_name"`
 	AttachmentType string   `json:"attachment_type"`
+	Files          []string `json:"files"`
+	FileNames      []string `json:"file_names"`
+	FileTypes      []string `json:"file_types"`
 }
 
 type Request struct {
@@ -64,6 +67,9 @@ type Message struct {
 	AttachmentName string   `json:"attachment_name"`
 	AttachmentType string   `json:"attachment_type"`
 	Interrupted    bool     `json:"interrupted"`
+	Files          []string `json:"files"`
+	FileNames      []string `json:"file_names"`
+	FileTypes      []string `json:"file_types"`
 }
 
 type Images struct {

@@ -7,145 +7,173 @@
     <div class="contentFrame">
       <div class="chat" #chatContainer>
         @for (message of messages; track $index; let last = $last) {
-          @if (message.role == "assistant" || message.role == "bot") {
-            <div class="response">
-              <span class="modelName">{{ message.model!.split(":")[0] }}:</span>
-              <br />
-              @if (isGenerating && last) {
-                <div class="skeleton skeletonResponse"></div>
-              }
-              <markdown
-                ngPreserveWhitespaces
-                katex
-                clipboard
-                [data]="message.content"
-              >
-              </markdown>
-              @if (message.interrupted) {
-                <div class="interruptedMessage">Interrupted</div>
-              }
-            </div>
-          } @else {
-            <div class="questionContainer">
-              <div class="question">
-                <markdown
-                  ngPreserveWhitespaces
-                  katex
-                  [data]="message.content"
-                ></markdown>
-              </div>
-              @if (message.attachment_name) {
-                <div class="attachmentFrame messageAttachment">
-                  @if (message.images!.length > 0) {
-                    <div class="attachmentImage">
-                      <img [src]="'data:image/jpeg;base64,' + message.images![0]"/>
-                    </div>
-                  } @else {
-                    <div class="attachmentImagePlaceholder"><span class="material-symbols-rounded boldSymbol">
-                      image
-                      </span></div>  
-                  }
-                  <div class="attachmentInfo">
-                    <div class="attachmentName">{{ message.attachment_name }}</div>
-                    <div class="attachmentType">{{ message.attachment_type }}</div>
-                  </div>
-                </div>
-              }
-            </div>
+        @if (message.role == "assistant" || message.role == "bot") {
+        <div class="response">
+          <span class="modelName">{{ message.model!.split(":")[0] }}:</span>
+          <br />
+          @if (isGenerating && last) {
+          <div class="skeleton skeletonResponse"></div>
           }
+          <markdown ngPreserveWhitespaces katex clipboard [data]="message.content">
+          </markdown>
+          @if (message.interrupted) {
+          <div class="interruptedMessage">Interrupted</div>
+          }
+        </div>
+        } @else {
+        <div class="questionContainer">
+          <div class="question">
+            <markdown ngPreserveWhitespaces katex [data]="message.content"></markdown>
+          </div>
+          @if (message.attachment_name || message.file_names!.length > 0) {
+          <div class="attachmentsContainer messageAttachmentsContainer">
+            @if (message.attachment_name) {
+              <div class="attachmentFrame messageAttachment">
+                @if (message.images!.length > 0) {
+                <div class="attachmentImage">
+                  <img [src]="'data:image/jpeg;base64,' + message.images![0]" />
+                </div>
+                } @else {
+                <div class="attachmentImagePlaceholder"><span class="material-symbols-rounded boldSymbol">
+                    image
+                  </span></div>
+                }
+                <div class="attachmentInfo">
+                  <div class="attachmentName">{{ message.attachment_name }}</div>
+                  <div class="attachmentType">{{ message.attachment_type }}</div>
+                </div>
+              </div>
+              }
+              @if (message.file_names!.length > 0) {
+                @for (file of message.file_names; track $index;) {
+                  <div class="attachmentFrame messageAttachment">
+                    <div class="attachmentImagePlaceholder"><span class="material-symbols-rounded boldSymbol">
+                        description
+                      </span></div>
+                    <div class="attachmentInfo">
+                      <div class="attachmentName">{{ file }}</div>
+                      <div class="attachmentType">{{ message.file_types![$index] }}</div>
+                    </div>
+                  </div>
+                }
+              }
+          </div>
+          }
+        </div>
+        }
         }
 
         @if (
-          this.streamingMessage !== null &&
-          this.streamingMessage.message &&
-          this.chatID === this.streamingMessage.chatID &&
-          this.streamingMessage.isResponding
+        this.streamingMessage !== null &&
+        this.streamingMessage.message &&
+        this.chatID === this.streamingMessage.chatID &&
+        this.streamingMessage.isResponding
         ) {
-          <div class="response">
-            <span class="modelName"
-              >{{ this.streamingMessage.message.model!.split(":")[0] }}:</span
-            >
-            <br />
-            @if (this.streamingMessage.isGenerating) {
-              <div class="skeleton skeletonResponse"></div>
-            }
-            <markdown
-              ngPreserveWhitespaces
-              katex
-              [data]="this.streamingMessage.message.content"
-            >
-            </markdown>
-          </div>
+        <div class="response">
+          <span class="modelName">{{ this.streamingMessage.message.model!.split(":")[0] }}:</span>
+          <br />
+          @if (this.streamingMessage.isGenerating) {
+          <div class="skeleton skeletonResponse"></div>
+          }
+          <markdown ngPreserveWhitespaces katex [data]="this.streamingMessage.message.content">
+          </markdown>
+        </div>
         }
       </div>
       <div class="queryInputContainer">
         <div class="scrollDownHelper">
-          <span
-            class="material-symbols-rounded scrollDownButton"
-            [class.disabled]="isAtBottom"
-            (click)="scrollToBottom(true)"
-            >arrow_downward</span
-          >
+          <span class="material-symbols-rounded scrollDownButton" [class.disabled]="isAtBottom"
+            (click)="scrollToBottom(true)">arrow_downward</span>
         </div>
         <div class="gradient"></div>
-        <div class="queryOuterContainer" [class.inactive]="!hasFiles">
-          @if (files.length > 0) {
-            <div class="attachmentsContainer">
-              @for (file of files; track $index) {
-                <div class="attachmentFrame">
-                  <div class="attachmentImage"><img [src]="'data:image/jpeg;base64,' + this.images[$index]"/></div>
-                  <div class="attachmentInfo">
-                    <div class="attachmentName">{{ file.name }}</div>
-                    <div class="attachmentType">{{ file.type }}</div>
-                  </div>
-                  <div class="removeAttachment" (click)="removeFile($index)"><span class="material-symbols-rounded closeSymbol">
-                    close
-                    </span></div>
-                </div>
-              }
+        <div class="queryOuterContainer" [class.inactive]="!hasAttachments">
+          @if (this.files.length > 1 || (this.imageFiles.length == 1 && this.files.length == 1)) {
+            <div class="removeAttachment removeAll" (click)="removeAllAttachments()"><span
+              class="material-symbols-rounded closeSymbol">
+              close
+            </span></div>
+          }
+          @if (imageFiles.length > 0 || files.length > 0) {
+          <div class="attachmentsContainer">
+            @for (file of imageFiles; track $index) {
+            <div class="attachmentFrame">
+              <div class="attachmentImage"><img [src]="'data:image/jpeg;base64,' + this.images[$index]" /></div>
+              <div class="attachmentInfo">
+                <div class="attachmentName">{{ file.name }}</div>
+                <div class="attachmentType">{{ file.type }}</div>
+              </div>
+              <div class="removeAttachment" (click)="removeImage($index)"><span
+                  class="material-symbols-rounded closeSymbol">
+                  close
+                </span></div>
             </div>
+            }
+            @for (file of files; track $index) {
+              <div class="attachmentFrame">
+                <div class="attachmentImage">
+                  <div class="attachmentImagePlaceholder"><span class="material-symbols-rounded boldSymbol">
+                    draft
+                  </span></div>
+                </div>
+                <div class="attachmentInfo">
+                  <div class="attachmentName">{{ file.name }}</div>
+                  <div class="attachmentType">{{ file.type }}</div>
+                </div>
+                <div class="removeAttachment" (click)="removeFile($index)"><span
+                    class="material-symbols-rounded closeSymbol">
+                    close
+                  </span></div>
+              </div>
+              }
+          </div>
           }
           <div class="queryInputBorder">
-            <textarea
-            id="8"
-            class="queryInput unrevealed2 rvItem"
-            placeholder="Message {{ selectedModel!.name_trimmed }}"
-            [(ngModel)]="queryText"
-            [class.disabled]="isDisabled"
-            (input)="onTextAreaInput()"
-            [disabled]="isDisabled"
-            [placeholder]="
+            <textarea id="8" class="queryInput unrevealed2 rvItem"
+              placeholder="Message {{ selectedModel!.name_trimmed }}" [(ngModel)]="queryText"
+              [class.disabled]="isDisabled" (input)="onTextAreaInput()" [disabled]="isDisabled" [placeholder]="
               isDisabled
-                ? (this.streamingMessage!.isGenerating ? 'Loading model...' : 'Generating response...')
+                ? (this.streamingMessage?.isGenerating ? 'Loading model...' : 'Generating response...')
                 : 'Message ' + selectedModel?.name_trimmed
-            "
-            (keydown)="sendQueryKeydown($event)"
-            #queryTextArea
-          ></textarea>
-          <div class="inputBorderContainer">
-            <input type="file" accept=".png, .jpg, .webp, .jpeg, .avif" [class.disabled]="isDisabled" (change)="onFileUpload($event)" #fileUpload>
-            <div class="inputButton unrevealed rvItem" [class.disabled]="isDisabled" id="9" (click)="fileUpload.click()">
-              <span class="material-symbols-rounded">
-                upload
-                </span>
-              Upload Image
-            </div>
-            @if (isDisabled) {
+            " (keydown)="sendQueryKeydown($event)" #queryTextArea></textarea>
+            <div class="inputBorderContainer">
+              <input type="file" accept=".png, .jpg, .jpeg" [class.disabled]="isDisabled" (change)="onImageUpload($event)"
+                #imageUpload>
+              <input type="file"
+                accept="file/*, text/*, 4th, .apl, .asn, .asn1, .aspx, .b, .bash, .bf, .BUILD, .bzl, .c, .c++, .cc, .cfg, .cl, .clj, .cljc, .cljs, .cljx, .cmake, .cmake.in, .cob, .coffee, .conf, .cpp, .cpy, .cql, .cr, .cs, .css, .cxx, .cyp, .cypher, .d, .dart, .def, .diff, .dtd, .dyalog, .dyl, .dylan, .e, .ecl, .edn, .ejs, .el, .elm, .erb, .erl, .f, .f77, .f90, .factor, .feature, .for, .forth, .fs, .fth, .go, .gradle, .groovy, .gss, .h, .h++, .haml, .hh, .hpp, .hs, .htm, .html, .hx, .hxml, .hxx, .in, .ini, .intr, .jade, .java, .jl, .js, .json, .jsonld, .jsonld, .jsp, .jsx, .ksh, .kt, .less, .lhs, .lisp, .list, .log, .ls, .ltx, .lua, .m, .map, .markdown, .mbox, .md, .mkd, .ml, .mli, .mll, .mly, .mm, .mo, .mps, .msc, .mscgen, .mscin, .msgenny, .nb, .nsh, .nsi, .nt, .nut, .oz, .p, .pas, .patch, .pgp, .php, .php3, .php4, .php5, .phtml, .pig, .pl, .pls, .pm, .pp, .pro, .properties, .proto, .ps1, .psd1, .psm1, .pug, .pxd, .pxi, .py, .pyw, .pyx, .q, .R, .r, .rb, .rq, .rs, .rst, .s, .sas, .sass, .scala, .scm, .scss, .sh, .sieve, .siv, .slim, .soy, .sparql, .spec, .sql, .ss, .st, .styl, .swift, .tcl, .text, .text, .textile, .toml, .tpl, .ts, .tsx, .ttcn, .ttcn3, .ttcnpp, .ttl, .txt, .v, .vb, .vbs, .vhd, .vhdl, .vtl, .vue, .webidl, .xml, .xquery, .xsd, .xsl, .xu, .xy, .yaml, .yml, .ys, .z80"
+                multiple [class.disabled]="isDisabled" (change)="onFileUpload($event)" #fileUpload>
+              <span class="uploadButtonsContainer">
+                <div class="inputButton unrevealed rvItem" [class.disabled]="isDisabled" id="9"
+                  (click)="imageUpload.click()">
+                  <span class="material-symbols-rounded">
+                    add_photo_alternate
+                  </span>
+                  Upload Image
+                </div>
+                <div class="inputButton unrevealed rvItem" [class.disabled]="isDisabled" id="9"
+                  (click)="fileUpload.click()">
+                  <span class="material-symbols-rounded">
+                    upload_file
+                  </span>
+                  Upload File
+                </div>
+              </span>
+              @if (isDisabled) {
               <div class="interruptButtonContainer">
                 <div class="interruptButtonOuter" (click)="handleInterrupt()">
                   <div class="interruptButton"></div>
                 </div>
               </div>
-            } @else {
+              } @else {
               <div class="interruptButtonContainer">
-                <div class="interruptButtonOuter" [class.disabled]="this.queryText.length == 0" (click)="simulateEnterPress()">
+                <div class="interruptButtonOuter" [class.disabled]="this.queryText.length == 0"
+                  (click)="simulateEnterPress()">
                   <div class="sendButton"><span class="material-symbols-rounded sendIcon">
-                    send
+                      send
                     </span></div>
                 </div>
               </div>
-            }
-          </div>
+              }
+            </div>
           </div>
         </div>
       </div>

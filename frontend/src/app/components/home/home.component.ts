@@ -8,6 +8,7 @@ import { Model } from "../../data/models";
 import { ModelService } from "../../service/models.service";
 import { ChatService } from "../../service/chat.service";
 import { SidebarCollapseButtonComponent } from "../sidebar-collapse-button/sidebar-collapse-button.component";
+import { Attachment } from "../../data/attachment";
 
 @Component({
   selector: "app-home",
@@ -26,14 +27,18 @@ export class HomeComponent implements OnInit {
   };
 
   messages: Message[] = [];
-
   queryText: String = "";
   images: String[] = [];
-  files: File[] = [];
+  imageFiles: File[] = [];
   selectedModel: Model | null = null;
   response: String = "";
   isDisabled: boolean = false;
+  attachment_name: string = "";
+  attachment_type: string = "";
+  hasImages: boolean = this.imageFiles.length != 0;
+  files: Attachment[] = [];
   hasFiles: boolean = this.files.length != 0;
+  hasAttachments: boolean = this.imageFiles.length != 0 || this.files.length != 0;
 
   @ViewChild("queryTextArea") queryTextAreaRef!: ElementRef;
   @ViewChild("chatContainer") chatContainerRef!: ElementRef;
@@ -95,6 +100,11 @@ export class HomeComponent implements OnInit {
       170 - 30,
     );
 
+    setTimeout(
+      () => document.getElementById("11")!.classList.remove("unrevealed"),
+      190 - 30,
+    );
+
   }
 
   /*remove() {
@@ -115,10 +125,10 @@ export class HomeComponent implements OnInit {
       } else {
         event.preventDefault();
         this.router.navigate([`/chat/new`], {
-          state: { query: this.queryText, images: this.images, attachment_name: this.files[0]?.name, attachment_type: this.files[0]?.type },
+          state: { query: this.queryText, images: this.images, attachment_name: this.imageFiles[0]?.name, attachment_type: this.imageFiles[0]?.type, files: this.files },
         });
         this.queryText = "";
-        this.images = [];
+        this.removeAllAttachments();
         const textarea: HTMLTextAreaElement =
           this.queryTextAreaRef.nativeElement;
         textarea.style.height = "auto";
@@ -153,17 +163,20 @@ export class HomeComponent implements OnInit {
     }, 0);
   }
 
-  onFileUpload(event: any) {
+  onImageUpload(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.files = [file]
-      this.hasFiles = this.files.length > 0
+      this.imageFiles = [file]
+      this.hasImages = this.imageFiles.length > 0
+      this.hasAttachments = this.imageFiles.length > 0 || this.files.length > 0
       const reader = new FileReader();
-      
+
       reader.onload = (e: any) => {
         const base64String = e.target.result;
         const base64Data = base64String.split(",")[1];
         this.images = [base64Data];
+        this.attachment_name = file.name;
+        this.attachment_type = file.type;
       };
       reader.readAsDataURL(file);
       event.target.value = "";
@@ -172,10 +185,56 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  onFileUpload(event: any) {
+    for (let i = 0; i < event.target.files.length; i++) {
+      const file = event.target.files[i];
+      if (file) {
+        const reader = new FileReader();
+        reader.readAsText(file)
+        reader.onload = () => {
+          const fileContent = reader.result as string
+
+          for (let i = 0; i < this.files.length; i++) {
+            if (file.name === this.files[i].name) {
+              if (fileContent === this.files[i].file) {
+                return
+              }
+            }
+          }
+          this.files.push({file: fileContent, name: file.name, type: file.type || 'file/'+file.name.split('.').pop()});
+          this.hasFiles = this.files.length > 0
+          this.hasAttachments = this.imageFiles.length > 0 || this.files.length > 0
+        };
+      }
+    }
+    event.target.value = "";
+  }
+
+  removeImage(index: number) {
+    this.imageFiles.splice(index, 1);
+    this.images.splice(index, 1);
+    this.attachment_name = "";
+    this.attachment_type = "";
+    this.hasImages = this.imageFiles.length > 0
+    this.hasAttachments = this.imageFiles.length > 0 || this.files.length > 0
+  }
+
   removeFile(index: number) {
     this.files.splice(index, 1);
-    this.images.splice(index, 1);
     this.hasFiles = this.files.length > 0
+    this.hasAttachments = this.imageFiles.length > 0 || this.files.length > 0
+  }
+
+  removeAllAttachments() {
+    this.imageFiles = [];
+    this.images = [];
+    this.hasImages = false;
+    this.attachment_name = "";
+    this.attachment_type = "";
+    this.files = [];
+    this.hasFiles = false;
+    this.hasAttachments = false;
+    this.hasAttachments = this.imageFiles.length > 0 || this.files.length > 0
   }
 
   ngOnInit(): void {

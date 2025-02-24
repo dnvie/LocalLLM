@@ -6,6 +6,9 @@ export interface Message {
   interrupted: boolean;
   attachment_name?: string;
   attachment_type?: string;
+  files?: string[];
+  file_names? : string[];
+  file_types? : string[];
 }
 
 export interface StreamingMessage {

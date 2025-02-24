@@ -14,6 +14,7 @@ import { MarkdownComponent, MarkdownModule } from "ngx-markdown";
 import { StreamingService } from "../../service/streaming.service";
 import { Subscription } from "rxjs";
 import { SidebarCollapseButtonComponent } from "../sidebar-collapse-button/sidebar-collapse-button.component";
+import { Attachment } from "../../data/attachment";
 
 MarkdownModule.forRoot();
 
@@ -42,10 +43,13 @@ export class ChatComponent implements OnInit {
   isGenerating: boolean = false;
   streamingMessage: StreamingMessage | null = null;
   isAtBottom: boolean = true;
-  files: File[] = [];
+  imageFiles: File[] = [];
   attachment_name: string = "";
   attachment_type: string = "";
+  hasImages: boolean = this.imageFiles.length != 0;
+  files: Attachment[] = [];
   hasFiles: boolean = this.files.length != 0;
+  hasAttachments: boolean = this.imageFiles.length != 0 || this.files.length != 0;
 
   @ViewChild("queryTextArea") queryTextAreaRef!: ElementRef;
   @ViewChild("chatContainer") chatContainerRef!: ElementRef;
@@ -92,9 +96,7 @@ export class ChatComponent implements OnInit {
         if (this.queryText.trim() !== "") {
           this.sendQuery();
           this.queryText = "";
-          this.images = [];
-          this.hasFiles = false;
-          this.files = [];
+          this.removeAllAttachments()
           const textarea: HTMLTextAreaElement =
             this.queryTextAreaRef.nativeElement;
           textarea.style.height = "auto";
@@ -127,6 +129,9 @@ export class ChatComponent implements OnInit {
         interrupted: false,
         attachment_name: this.attachment_name,
         attachment_type: this.attachment_type,
+        files: [],
+        file_names: this.files.map(file => file.name) || [],
+        file_types: this.files.map(file => file.type) || [],
       });
       this.messages.push({
         model: this.selectedModel.name,
@@ -136,9 +141,23 @@ export class ChatComponent implements OnInit {
         interrupted: false,
         attachment_name: this.attachment_name,
         attachment_type: this.attachment_type,
+        files: [],
+        file_names: this.files.map(file => file.name) || [],
+        file_types: this.files.map(file => file.type) || [],
       });
       this.scrollToBottom();
-      sessionStorage.setItem(this.chatID!, JSON.stringify(currentMessages));
+      try {
+        sessionStorage.setItem(this.chatID!, JSON.stringify(currentMessages));
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "QuotaExceededError") {
+          var sessionMessages = JSON.parse(sessionStorage.getItem(this.chatID!)!);
+          sessionStorage.clear();
+          sessionStorage.setItem(this.chatID!, JSON.stringify(sessionMessages));
+        } else {
+          console.error("An error occurred while saving to sessionStorage:", error);
+        }
+      }
+      
       this.chatService.setIsDisabled(true);
       this.streamingService.sendQuery(
         this.selectedModel.name,
@@ -147,8 +166,9 @@ export class ChatComponent implements OnInit {
         this.attachment_name,
         this.attachment_type,
         this.chatID!,
+        this.files
       );
-      this.removeFile(0)
+      this.removeAllAttachments();
       this.attachment_name = "";
       this.attachment_type = "";
       this.images = [];
@@ -202,11 +222,12 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  onFileUpload(event: any) {
+  onImageUpload(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.files = [file]
-      this.hasFiles = this.files.length > 0
+      this.imageFiles = [file]
+      this.hasImages = this.imageFiles.length > 0
+      this.hasAttachments = this.imageFiles.length > 0 || this.files.length > 0
       const reader = new FileReader();
 
       reader.onload = (e: any) => {
@@ -223,10 +244,55 @@ export class ChatComponent implements OnInit {
     }
   }
 
+  onFileUpload(event: any) {
+    for (let i = 0; i < event.target.files.length; i++) {
+      const file = event.target.files[i];
+      if (file) {
+        const reader = new FileReader();
+        reader.readAsText(file)
+        reader.onload = () => {
+          const fileContent = reader.result as string
+
+          for (let i = 0; i < this.files.length; i++) {
+            if (file.name === this.files[i].name) {
+              if (fileContent === this.files[i].file) {
+                return
+            }
+          }
+          this.files.push({file: fileContent, name: file.name, type: file.type || 'file/'+file.name.split('.').pop()});
+          this.hasFiles = this.files.length > 0
+          this.hasAttachments = this.imageFiles.length > 0 || this.files.length > 0
+        };
+      }
+    }
+    event.target.value = "";
+  }
+
+  removeImage(index: number) {
+    this.imageFiles.splice(index, 1);
+    this.images.splice(index, 1);
+    this.attachment_name = "";
+    this.attachment_type = "";
+    this.hasImages = this.imageFiles.length > 0
+    this.hasAttachments = this.imageFiles.length > 0 || this.files.length > 0
+  }
+
   removeFile(index: number) {
     this.files.splice(index, 1);
-    this.images.splice(index, 1);
     this.hasFiles = this.files.length > 0
+    this.hasAttachments = this.imageFiles.length > 0 || this.files.length > 0
+  }
+
+  removeAllAttachments() {
+    this.imageFiles = [];
+    this.images = [];
+    this.hasImages = false;
+    this.attachment_name = "";
+    this.attachment_type = "";
+    this.files = [];
+    this.hasFiles = false;
+    this.hasAttachments = false;
+    this.hasAttachments = this.imageFiles.length > 0 || this.files.length > 0
   }
 
   ngOnInit(): void {
@@ -268,7 +334,9 @@ export class ChatComponent implements OnInit {
 
     this.chatService.isDisabled$.subscribe((disabled) => {
       this.isDisabled = disabled;
-      setTimeout(() => this.queryTextAreaRef.nativeElement.focus(), 1);
+      if (this.queryTextAreaRef) {
+        setTimeout(() => this.queryTextAreaRef.nativeElement.focus(), 1);
+      }
     });
 
     const navigationState = history.state as {
@@ -277,6 +345,7 @@ export class ChatComponent implements OnInit {
       images?: string[];
       attachment_name?: string;
       attachment_type?: string;
+      files?: Attachment[];
     };
 
     if (navigationState.messages) {
@@ -327,10 +396,17 @@ export class ChatComponent implements OnInit {
                 for (let i = 0; i < this.messages.length; i++) {
                   currentMessages[i].images = [];
                 }
-                sessionStorage.setItem(
-                  this.chatID!,
-                  JSON.stringify(currentMessages),
-                );
+                try {
+                  sessionStorage.setItem(this.chatID!, JSON.stringify(currentMessages));
+                } catch (error) {
+                  if (error instanceof DOMException && error.name === "QuotaExceededError") {
+                    var sessionMessages = JSON.parse(sessionStorage.getItem(this.chatID!)!);
+                    sessionStorage.clear();
+                    sessionStorage.setItem(this.chatID!, JSON.stringify(sessionMessages));
+                  } else {
+                    console.error("An error occurred while saving to sessionStorage:", error);
+                  }
+                }
                 this.cdRef.detectChanges();
               },
             });
@@ -375,13 +451,16 @@ export class ChatComponent implements OnInit {
         this.images = navigationState.images || [];
         this.attachment_name = navigationState.attachment_name || "";
         this.attachment_type = navigationState.attachment_type || "";
+        this.files = navigationState.files || [];
         this.sendQuery();
         this.queryText = "";
         history.replaceState({}, document.title);
       }
     }
 
-    setTimeout(() => this.queryTextAreaRef.nativeElement.focus(), 1);
+    if (this.queryTextAreaRef) {
+      setTimeout(() => this.queryTextAreaRef.nativeElement.focus(), 1);
+    }
   }
 
   ngOnDestroy(): void {

@@ -39,6 +39,9 @@
 .currentModel:hover {
   cursor: pointer;
   background-color: #f4f4f4;
+  .modelSize {
+    border: 0.5px solid rgb(200, 200, 200);
+  }
 }
 
 .modelSize {
@@ -133,6 +136,9 @@
 .model:hover {
   background-color: #f4f4f4;
   cursor: pointer;
+  .modelSize {
+    border: 0.5px solid rgb(200, 200, 200);
+  }
 }
 
 .modelCategory {
@@ -152,11 +158,11 @@
 .modelCategory:hover {
   .modelSize {
     color: #4e4e4e;
-    border: 0.5px solid rgb(210, 210, 210);
+    border: 0.5px solid rgb(200, 200, 200);
   }
   .modelQuantization {
     color: #4e4e4e;
-    border: 0.5px solid rgb(210, 210, 210);
+    border: 0.5px solid rgb(200, 200, 200);
   }
   background-color: #f4f4f4;
   cursor: pointer;

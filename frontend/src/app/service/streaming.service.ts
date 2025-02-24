@@ -5,6 +5,7 @@ import { Router, NavigationEnd } from "@angular/router";
 import { ChatService } from "./chat.service";
 import { Chat } from "../data/chat";
 import { filter } from "rxjs/operators";
+import { Attachment } from "../data/attachment";
 
 const baseUrl = "http://localhost:80";
 
@@ -68,10 +69,20 @@ export class StreamingService {
       existingMessages[i].images = [];
     }
 
+    try {
     sessionStorage.setItem(
       chatID,
       JSON.stringify(existingMessages),
     );
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "QuotaExceededError") {
+      var sessionMessages = JSON.parse(sessionStorage.getItem(chatID!)!);
+      sessionStorage.clear();
+      sessionStorage.setItem(chatID!, JSON.stringify(sessionMessages));
+    } else {
+      console.error("An error occurred while saving to sessionStorage:", error);
+    }
+  }
     this.messageSaved = true;
 
     this.sessionStorageUpdated.next(chatID);
@@ -98,10 +109,20 @@ export class StreamingService {
               lastMessage.role === currentMessage.message.role
             ) {
               lastMessage.interrupted = true;
+              try {
               sessionStorage.setItem(
                 currentMessage.chatID,
                 JSON.stringify(existingMessages)
               );
+            } catch (error) {
+              if (error instanceof DOMException && error.name === "QuotaExceededError") {
+                var sessionMessages = JSON.parse(sessionStorage.getItem(currentMessage.chatID!)!);
+                sessionStorage.clear();
+                sessionStorage.setItem(currentMessage.chatID, JSON.stringify(sessionMessages));
+              } else {
+                console.error("An error occurred while saving to sessionStorage:", error);
+              }
+            }
               this.sessionStorageUpdated.next(currentMessage.chatID);
             } else {
               console.warn('Last message in storage does not match current message');
@@ -137,7 +158,7 @@ export class StreamingService {
     }
   }
 
-  sendQuery(selectedModel: string, queryText: string, images: string[], attachment_name: string, attachment_type: string, chatId: string,) {
+  sendQuery(selectedModel: string, queryText: string, images: string[], attachment_name: string, attachment_type: string, chatId: string, files: Attachment[]) {
     if (!queryText || !selectedModel) {
       console.log("Please provide both a query and a (valid) model");
       return;
@@ -159,7 +180,7 @@ export class StreamingService {
 
     this.streamingMessage.next(streamingMessage);
 
-    this.streamText(selectedModel, queryText, images, attachment_name, attachment_type, chatId).subscribe({
+    this.streamText(selectedModel, queryText, images, attachment_name, attachment_type, chatId, files.map(file => file.file), files.map(file => file.name), files.map(file => file.type)).subscribe({
       next: ({ chatID, chunk }) => {
         if (this.router.url === "/chat/new") {
           this.router.navigate([`/chat/${chatID}`]);
@@ -223,12 +244,16 @@ export class StreamingService {
     attachment_name: string,
     attachment_type: string,
     chatID: string | null,
+    files: string[],
+    file_names: string[],
+    file_types: string[]
   ): Observable<{ chatID: string | null; chunk: string }> {
     return new Observable((observer) => {
       this.activeRequestController = new AbortController();
       const signal = this.activeRequestController.signal;
       const url = `${baseUrl}/chat/${model}/${chatID || "new"}`;
-      const body = { query, images, attachment_name, attachment_type };
+      console.log(file_names, file_types)
+      const body = { query, images, attachment_name, attachment_type, files, file_names, file_types};
       const encoder = new TextDecoder();
 
       fetch(url, {

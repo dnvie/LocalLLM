@@ -134,11 +134,22 @@ func ProcessChat(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	var augmentations []string
+
+	if len(req.Files) > 0 {
+		if err := data.CreateAndAddEmbedding(chatID, req.Files, req.FileNames, req.FileTypes); err != nil {
+			http.Error(w, "Error processing chat", http.StatusInternalServerError)
+			return
+		} else {
+			augmentations = data.QueryVectorDb(chatID, req.Query)
+		}
+	}
+
 	// Generate the thumbnail that we store in the database
 	img := service.GenerateThumbnail(req.Images)
 
 	// Insert the user message into the database
-	err := data.InsertMessage(chatID, "user", req.Query, modelName, img, req.AttachmentName, req.AttachmentType, false)
+	err := data.InsertMessage(chatID, "user", req.Query, modelName, img, req.AttachmentName, req.AttachmentType, req.FileNames, req.FileTypes, false)
 	if err != nil {
 		http.Error(w, "Error processing chat", http.StatusInternalServerError)
 		return
@@ -157,6 +168,17 @@ func ProcessChat(w http.ResponseWriter, r *http.Request) {
 
 		// If the query contains an image, we omit the chat history, as the LLM (apparently) can only process an image if a single message is given as context.
 		messages = messages[len(messages)-1:]
+	}
+
+	if len(req.Files) > 0 {
+		enhancedQuery := messages[len(messages)-1].Content + "Additional information retrieved from attached files:"
+
+		for _, augmentation := range augmentations {
+			enhancedQuery += augmentation
+		}
+
+		// Append the enhanced query to the messages slice
+		messages[len(messages)-1].Content = enhancedQuery
 	}
 
 	// Prepare the request data to invoke the QueryLLMChat method in the service package

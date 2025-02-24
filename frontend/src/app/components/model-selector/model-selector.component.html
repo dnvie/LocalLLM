@@ -3,8 +3,8 @@
       <div class="currentModel tr" (click)="toggleModelSelector()">
       {{ selectedModel!.name_trimmed }}
       @if (isListExpanded) {
-        <span class="modelQuantization modelSize"> {{ selectedModel!.details.quantization_level }}</span>
-        <span class="modelSize">{{ selectedModel!.details.parameter_size }}</span>
+        <span class="modelQuantization modelSize tr"> {{ selectedModel!.details.quantization_level }}</span>
+        <span class="modelSize tr">{{ selectedModel!.details.parameter_size }}</span>
       }
       <span class="material-symbols-rounded downCaret" id="downCaret"
         >keyboard_arrow_down</span

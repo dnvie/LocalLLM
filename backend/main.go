@@ -13,6 +13,7 @@ func main() {
 
 	// Initialize the database.
 	data.InitDb()
+	data.InitVectorDB()
 
 	// Load the models from the Ollama server.
 	status, _ := service.LoadModels()
