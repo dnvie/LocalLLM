@@ -63,6 +63,7 @@ type Message struct {
 	Model          string   `json:"model"`
 	Role           string   `json:"role"`
 	Content        string   `json:"content"`
+	Thinking       string   `json:"thinking"`
 	Images         []string `json:"images"`
 	AttachmentName string   `json:"attachment_name"`
 	AttachmentType string   `json:"attachment_type"`

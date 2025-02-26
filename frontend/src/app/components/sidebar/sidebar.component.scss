@@ -6,13 +6,14 @@
 .frame {
   transition: all 0.4s cubic-bezier(0.74, -0.01, 0.26, 1.04);
   width: 250px;
+  background-color: var(--frameBackground);
 }
 
 .sidebar {
   width: 250px;
   height: 100%;
   max-height: 100vh;
-  background-color: #f4f4f4;
+  background-color: var(--frameBackground);
   display: flex;
   flex-direction: column;
 }
@@ -39,12 +40,12 @@
 }
 
 .chatsContainer::-webkit-scrollbar {
-  background-color: #f4f4f4;
+  background-color: var(--frameBackground);
   width: 8px;
 }
 
 .chatsContainer::-webkit-scrollbar-thumb {
-  background-color: #c4c4c430;
+  background-color: var(--chatsContainerThumb);
   border-radius: 10px;
 }
 
@@ -63,7 +64,7 @@
   font-size: 15px;
   letter-spacing: -0.25px;
   font-weight: 600;
-  color: #000000;
+  color: var(--scrollDownButtonColor);
   justify-content: space-between;
 }
 
@@ -107,13 +108,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #00000070;
+  color: var(--chatWrapperColor);
   user-select: none;
 }
 
 .chatWrapper:hover {
-  background-color: #e7e7e750;
-  color: #000000;
+  background-color: var(--chatWrapperHoverBackground);
+  color: var(--chatWrapperHoverColor);
   cursor: pointer;
 }
 
@@ -130,11 +131,11 @@
   pointer-events: none;
   padding: 3px;
   border-radius: 100px;
-  background-color: #c4c4c400;
+  background-color: var(--menuIconBackground);
 }
 
 .menuIcon:hover {
-  background-color: #c4c4c450;
+  background-color: var(--menuIconHoverBackground);
 }
 
 .chatMenu {
@@ -148,8 +149,8 @@
 }
 
 .chatWrapper.active {
-  background-color: #e7e7e7;
-  color: #000000;
+  background-color: var(--chatWrapperActiveBackground);
+  color: var(--chatWrapperActiveColor);
   font-weight: 500;
 }
 
@@ -157,7 +158,7 @@
   position: absolute !important;
   display: none;
   flex-direction: row;
-  background-color: #e7e7e7;
+  background-color: var(--menuBackground);
   left: 0px;
   z-index: 99;
   height: 30px;
@@ -192,11 +193,23 @@
 }
 
 .editItem {
-  border: 0.5px solid rgb(60, 60, 60);
-  color: #2f2f2f;
+  border: 0.5px solid var(--editBorder);
+  color: var(--editColor);
+  background-color: var(--editBackground);
+}
+
+.editItem:hover {
+  filter: brightness(0.8);
+  cursor: pointer;
 }
 
 .deleteItem {
-  border: 0.5px solid rgb(219, 16, 16);
-  color: rgb(219, 16, 16);
+  border: 0.5px solid var(--deleteBorder);
+  color: var(--deleteColor);
+  background-color: var(--deleteBackground);
+}
+
+.deleteItem:hover {
+  filter: brightness(0.8);
+  cursor: pointer;
 }

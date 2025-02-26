@@ -40,10 +40,11 @@ func InitDb() {
 	messagesTable := `
 	CREATE TABLE IF NOT EXISTS messages (
 		message_id INTEGER PRIMARY KEY AUTOINCREMENT,
-		chat_id TEXT NOT NULL,
-		role TEXT NOT NULL,
-		content TEXT NOT NULL,
-		model TEXT,
+		chat_id TEXT NOT NULL DEFAULT "",
+		role TEXT NOT NULL DEFAULT "",
+		content TEXT NOT NULL DEFAULT "",
+		thinking TEXT NOT NULL DEFAULT "",
+		model TEXT NOT NULL DEFAULT "",
 		timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 		interrupted BOOLEAN NOT NULL DEFAULT FALSE,
 		image TEXT NOT NULL DEFAULT "",
@@ -88,6 +89,9 @@ func DropTables() {
 func InsertUser(userID string) error {
 	query := `INSERT INTO users (user_id) VALUES (?);`
 	_, err := Db.Exec(query, userID)
+	if err != nil {
+		log.Println("Error: ", err)
+	}
 	return err
 }
 
@@ -95,21 +99,29 @@ func InsertUser(userID string) error {
 func InsertChat(chatID, userID, title string) error {
 	query := `INSERT INTO chats (chat_id, user_id, title) VALUES (?, ?, ?);`
 	_, err := Db.Exec(query, chatID, userID, title)
+	if err != nil {
+		log.Println("Error: ", err)
+	}
 	return err
 }
 
 // Insert a message into the database.
-func InsertMessage(chatID, role, content, model, image, attachment_name, attachment_type string, file_names, file_types []string, interrupted bool) error {
-	query := `INSERT INTO messages (chat_id, role, content, model, image, attachment_name, attachment_type, file_names, file_types, interrupted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
+func InsertMessage(chatID, role, content, thinking, model, image, attachment_name, attachment_type string, file_names, file_types []string, interrupted bool) error {
+	query := `INSERT INTO messages (chat_id, role, content, thinking, model, image, attachment_name, attachment_type, file_names, file_types, interrupted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
 	jsonFileNames, err := json.Marshal(file_names)
 	if err != nil {
+		log.Println("Error: ", err)
 		return err
 	}
 	jsonFileTypes, err := json.Marshal(file_types)
 	if err != nil {
+		log.Println("Error: ", err)
 		return err
 	}
-	_, err2 := Db.Exec(query, chatID, role, content, model, image, attachment_name, attachment_type, jsonFileNames, jsonFileTypes, interrupted)
+	_, err2 := Db.Exec(query, chatID, role, content, thinking, model, image, attachment_name, attachment_type, jsonFileNames, jsonFileTypes, interrupted)
+	if err2 != nil {
+		log.Println("Error: ", err2)
+	}
 	return err2
 }
 
@@ -118,6 +130,7 @@ func UpdateChatTitle(chatID, title string) error {
 	query := `UPDATE chats SET title = ? WHERE chat_id = ?;`
 	_, err := Db.Exec(query, title, chatID)
 	if err != nil {
+		log.Println("Error: ", err)
 		return fmt.Errorf("error updating chat title: %v", err)
 	}
 	return nil
@@ -128,12 +141,14 @@ func DeleteChat(chatID string) error {
 	deleteMessagesQuery := `DELETE FROM messages WHERE chat_id = ?;`
 	_, err := Db.Exec(deleteMessagesQuery, chatID)
 	if err != nil {
+		log.Println("Error: ", err)
 		return fmt.Errorf("error deleting messages: %v", err)
 	}
 
 	deleteChatQuery := `DELETE FROM chats WHERE chat_id = ?;`
 	_, err = Db.Exec(deleteChatQuery, chatID)
 	if err != nil {
+		log.Println("Error: ", err)
 		return fmt.Errorf("error deleting chat: %v", err)
 	}
 	return nil
@@ -141,19 +156,21 @@ func DeleteChat(chatID string) error {
 
 // Query all messages from a chat, given the chat ID.
 func QueryMessagesFromChatWithoutImages(chatID string) ([]Message, error) {
-	query := `SELECT role, content, model, timestamp, attachment_name, attachment_type, file_names, file_types, interrupted FROM messages WHERE chat_id = ? ORDER BY timestamp;`
+	query := `SELECT role, content, thinking, model, timestamp, attachment_name, attachment_type, file_names, file_types, interrupted FROM messages WHERE chat_id = ? ORDER BY timestamp;`
 	rows, err := Db.Query(query, chatID)
 	if err != nil {
+		log.Println("Error: ", err)
 		return nil, err
 	}
 	defer rows.Close()
 
 	var messages []Message
 	for rows.Next() {
-		var role, content, model, attachment_name, attachment_type, file_names, file_types string
+		var role, content, thinking, model, attachment_name, attachment_type, file_names, file_types string
 		var timestamp time.Time
 		var interrupted bool
-		if err := rows.Scan(&role, &content, &model, &timestamp, &attachment_name, &attachment_type, &file_names, &file_types, &interrupted); err != nil {
+		if err := rows.Scan(&role, &content, &thinking, &model, &timestamp, &attachment_name, &attachment_type, &file_names, &file_types, &interrupted); err != nil {
+			log.Println("Error: ", err)
 			return nil, err
 		}
 
@@ -161,18 +178,29 @@ func QueryMessagesFromChatWithoutImages(chatID string) ([]Message, error) {
 
 		err := json.Unmarshal([]byte(file_names), &file_names_array)
 		if err != nil {
-			return nil, err
+			if file_names == "" {
+				file_names_array = []string{}
+			} else {
+				log.Println("Error: ", err)
+				return nil, err
+			}
 		}
 
 		err = json.Unmarshal([]byte(file_types), &file_types_array)
 		if err != nil {
-			return nil, err
+			if file_types == "" {
+				file_types_array = []string{}
+			} else {
+				log.Println("Error: ", err)
+				return nil, err
+			}
 		}
 
 		messages = append(messages, Message{
 			Model:          model,
 			Role:           role,
 			Content:        content,
+			Thinking:       thinking,
 			Interrupted:    interrupted,
 			AttachmentName: attachment_name,
 			AttachmentType: attachment_type,
@@ -184,19 +212,21 @@ func QueryMessagesFromChatWithoutImages(chatID string) ([]Message, error) {
 }
 
 func QueryMessagesFromChat(chatID string) ([]Message, error) {
-	query := `SELECT role, content, model, timestamp, image, attachment_name, attachment_type, file_names, file_types, interrupted FROM messages WHERE chat_id = ? ORDER BY timestamp;`
+	query := `SELECT role, content, thinking,model, timestamp, image, attachment_name, attachment_type, file_names, file_types, interrupted FROM messages WHERE chat_id = ? ORDER BY timestamp;`
 	rows, err := Db.Query(query, chatID)
 	if err != nil {
+		log.Println("Error: ", err)
 		return nil, err
 	}
 	defer rows.Close()
 
 	var messages []Message
 	for rows.Next() {
-		var role, content, model, image, attachment_name, attachment_type, file_names, file_types string
+		var role, content, thinking, model, image, attachment_name, attachment_type, file_names, file_types string
 		var timestamp time.Time
 		var interrupted bool
-		if err := rows.Scan(&role, &content, &model, &timestamp, &image, &attachment_name, &attachment_type, &file_names, &file_types, &interrupted); err != nil {
+		if err := rows.Scan(&role, &content, &thinking, &model, &timestamp, &image, &attachment_name, &attachment_type, &file_names, &file_types, &interrupted); err != nil {
+			log.Println("Error: ", err)
 			return nil, err
 		}
 
@@ -204,18 +234,29 @@ func QueryMessagesFromChat(chatID string) ([]Message, error) {
 
 		err := json.Unmarshal([]byte(file_names), &file_names_array)
 		if err != nil {
-			return nil, err
+			if file_names == "" {
+				file_names_array = []string{}
+			} else {
+				log.Println("Error: ", err)
+				return nil, err
+			}
 		}
 
 		err = json.Unmarshal([]byte(file_types), &file_types_array)
 		if err != nil {
-			return nil, err
+			if file_types == "" {
+				file_types_array = []string{}
+			} else {
+				log.Println("Error: ", err)
+				return nil, err
+			}
 		}
 
 		messages = append(messages, Message{
 			Model:          model,
 			Role:           role,
 			Content:        content,
+			Thinking:       thinking,
 			Interrupted:    interrupted,
 			Images:         []string{image},
 			AttachmentName: attachment_name,
@@ -232,6 +273,7 @@ func QueryChatsFromUser(userID string) ([]Chat, error) {
 	query := `SELECT chat_id, title FROM chats WHERE user_id = ?;`
 	rows, err := Db.Query(query, userID)
 	if err != nil {
+		log.Println("Error: ", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -240,6 +282,7 @@ func QueryChatsFromUser(userID string) ([]Chat, error) {
 	for rows.Next() {
 		var chatID, title string
 		if err := rows.Scan(&chatID, &title); err != nil {
+			log.Println("Error: ", err)
 			return nil, err
 		}
 
@@ -263,23 +306,35 @@ func InsertDefaultUser(userID string) {
 
 	_, err := Db.Exec(query, userID)
 	if err != nil {
+		log.Println("Error: ", err)
 		log.Fatal(err)
 	}
 }
 
 // Add an interrupted message to the database.
 func AddInterruptedMessage(chatID string, message Message) error {
-	query := `INSERT INTO messages (chat_id, role, content, model, image, attachment_name, attachment_type, file_names, file_types, interrupted) VALUES (?, ?, ?, ?, ?);`
-	_, err := Db.Exec(query, chatID, message.Role, message.Content, message.Model, nil, "", "", nil, nil, message.Interrupted)
+	query := `INSERT INTO messages (chat_id, role, content, thinking, model, image, attachment_name, attachment_type, file_names, file_types, interrupted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
+	image, err2 := json.Marshal([]string{})
+	if err2 != nil {
+		return err2
+	}
+	file_names := image
+	file_types := image
+	_, err := Db.Exec(query, chatID, message.Role, message.Content, message.Thinking, message.Model, image, "", "", file_names, file_types, message.Interrupted)
+	if err != nil {
+		log.Println("Error: ", err)
+	}
 	return err
 }
 
+// Retrieve stored thumbnails for images sent in a chat.
 func GetImagesFromChat(chatID string) (Images, error) {
-	query := `SELECT image FROM messages WHERE image != "" ORDER BY timestamp`
+	query := `SELECT image FROM messages WHERE image != "" AND chat_id = ? ORDER BY timestamp`
 
 	var images Images
 	rows, err := Db.Query(query, chatID)
 	if err != nil {
+		log.Println("Error: ", err)
 		return images, err
 	}
 	defer rows.Close()
@@ -287,6 +342,7 @@ func GetImagesFromChat(chatID string) (Images, error) {
 	for rows.Next() {
 		var image string
 		if err := rows.Scan(&image); err != nil {
+			log.Println("Error: ", err)
 			return images, err
 		}
 

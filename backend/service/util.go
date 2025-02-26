@@ -5,9 +5,9 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"image/jpeg"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"sort"
@@ -21,21 +21,21 @@ import (
 func LoadModels() (int, data.Models) {
 	resp, err := http.Get(data.OLLAMA_SERVER + "/api/tags")
 	if err != nil {
-		fmt.Println("Error loading model list:", err)
+		log.Println("Error loading model list:", err)
 		os.Exit(1)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Error reading response body:", err)
+		log.Println("Error reading response body:", err)
 		os.Exit(1)
 	}
 
 	var models data.Models
 	err = json.Unmarshal(body, &models)
 	if err != nil {
-		fmt.Println("Error unmarshalling JSON:", err)
+		log.Println("Error unmarshalling JSON:", err)
 		os.Exit(1)
 	}
 
@@ -76,13 +76,16 @@ func GenerateThumbnail(base64string []string) string {
 	if len(base64string) == 0 {
 		return ""
 	}
+
 	imgData, err := base64.StdEncoding.DecodeString(base64string[0])
 	if err != nil {
+		log.Println("Error: ", err)
 		return ""
 	}
 
 	img, err := imaging.Decode(bytes.NewReader(imgData))
 	if err != nil {
+		log.Println("Error: ", err)
 		return ""
 	}
 
@@ -116,6 +119,7 @@ func GenerateThumbnail(base64string []string) string {
 	var buffer bytes.Buffer
 	err = jpeg.Encode(&buffer, resizedImg, nil)
 	if err != nil {
+		log.Println("Error: ", err)
 		return ""
 	}
 

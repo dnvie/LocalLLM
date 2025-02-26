@@ -29,6 +29,7 @@ export class ChatService {
         model: message.model,
         role: message.role,
         content: message.content,
+        thinking: message.thinking,
         interrupted: true
       };
 

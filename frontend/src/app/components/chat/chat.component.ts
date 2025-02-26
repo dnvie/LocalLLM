@@ -124,6 +124,7 @@ export class ChatComponent implements OnInit {
       currentMessages.push({
         model: this.selectedModel.name,
         content: this.queryText.toString(),
+        thinking: "",
         role: "user",
         images: [],
         interrupted: false,
@@ -136,6 +137,7 @@ export class ChatComponent implements OnInit {
       this.messages.push({
         model: this.selectedModel.name,
         content: this.queryText.toString(),
+        thinking: "",
         role: "user",
         images: currentImage,
         interrupted: false,
@@ -257,6 +259,7 @@ export class ChatComponent implements OnInit {
             if (file.name === this.files[i].name) {
               if (fileContent === this.files[i].file) {
                 return
+              }
             }
           }
           this.files.push({file: fileContent, name: file.name, type: file.type || 'file/'+file.name.split('.').pop()});

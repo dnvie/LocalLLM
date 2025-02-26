@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -74,6 +75,7 @@ func QueryLLMChat(w http.ResponseWriter, reqData data.ChatRequest, chatID string
 	// Unpack the request data
 	jsonData, err := json.Marshal(reqData)
 	if err != nil {
+		log.Println("Error: ", err)
 		return fmt.Errorf("failed to marshal request data: %v", err)
 	}
 
@@ -85,6 +87,7 @@ func QueryLLMChat(w http.ResponseWriter, reqData data.ChatRequest, chatID string
 	// Send the request to the Ollama server
 	httpReq, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(jsonData))
 	if err != nil {
+		log.Println("Error: ", err)
 		return fmt.Errorf("failed to create request: %v", err)
 	}
 
@@ -92,6 +95,7 @@ func QueryLLMChat(w http.ResponseWriter, reqData data.ChatRequest, chatID string
 
 	resp, err := client.Do(httpReq)
 	if err != nil {
+		log.Println("Error: ", err)
 		return fmt.Errorf("request failed: %v", err)
 	}
 	defer resp.Body.Close()
@@ -108,6 +112,9 @@ func QueryLLMChat(w http.ResponseWriter, reqData data.ChatRequest, chatID string
 	decoder := json.NewDecoder(resp.Body)
 
 	var fullResponse string
+	var fullThinking string
+
+	isThinking := false
 
 	// While loop to read the chunked response from the Ollama server
 	for {
@@ -116,16 +123,28 @@ func QueryLLMChat(w http.ResponseWriter, reqData data.ChatRequest, chatID string
 		if err := decoder.Decode(&apiResponse); err == io.EOF {
 			break
 		} else if err != nil {
+			log.Println("Error: ", err)
 			return fmt.Errorf("failed to decode JSON: %v", err)
 		}
 
 		// Whilte the repsonse is not empty, return the current chunk
 		if apiResponse.Message.Content != "" {
 
-			fullResponse += apiResponse.Message.Content
+			if apiResponse.Message.Content == "<think>" {
+				isThinking = true
+			} else if apiResponse.Message.Content == "</think>" {
+				isThinking = false
+			} else {
+				if isThinking {
+					fullThinking += apiResponse.Message.Content
+				} else {
+					fullResponse += apiResponse.Message.Content
+				}
+			}
 
 			err = writeChunk(w, apiResponse.Message.Content)
 			if err != nil {
+				log.Println("Error: ", err)
 				return fmt.Errorf("failed to write chunk: %v", err)
 			}
 		}
@@ -136,7 +155,7 @@ func QueryLLMChat(w http.ResponseWriter, reqData data.ChatRequest, chatID string
 	}
 
 	// Save the complete response to the database
-	data.InsertMessage(chatID, "assistant", fullResponse, reqData.Model, "", "", "", nil, nil, false)
+	data.InsertMessage(chatID, "assistant", fullResponse, fullThinking, reqData.Model, "", "", "", nil, nil, false)
 
 	return nil
 }
@@ -145,6 +164,7 @@ func QueryLLMChat(w http.ResponseWriter, reqData data.ChatRequest, chatID string
 func writeChunk(w http.ResponseWriter, chunk string) error {
 	_, err := fmt.Fprintf(w, "%s", chunk)
 	if err != nil {
+		log.Println("Error: ", err)
 		return fmt.Errorf("failed to write chunk: %v", err)
 	}
 

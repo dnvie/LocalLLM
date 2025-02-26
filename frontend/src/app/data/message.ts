@@ -2,6 +2,7 @@ export interface Message {
   model?: string;
   role: string;
   content: string;
+  thinking: string;
   images?: string[];
   interrupted: boolean;
   attachment_name?: string;
@@ -16,6 +17,7 @@ export interface StreamingMessage {
   message: Message;
   isGenerating: boolean;
   isResponding: boolean;
+  isThinking: boolean;
 }
 
 export interface Images {

@@ -5,7 +5,7 @@
   justify-content: center;
   align-items: flex-start;
   flex-direction: row;
-  background-color: #f4f4f4;
+  background-color: var(--frameBackground);
   position: relative;
   overflow: hidden;
 }
@@ -39,7 +39,7 @@ app-sidebar-collapse-button {
 .content {
   width: 100%;
   height: 100%;
-  background-color: #ffffff;
+  background-color: var(--contentBackground);
   border-radius: 30px 0px 0px 30px;
   box-shadow: 0px 0px 25px 5px rgba(0, 0, 0, 0.025);
   display: flex;
@@ -73,12 +73,12 @@ app-sidebar-collapse-button {
 }
 
 .chat::-webkit-scrollbar-thumb {
-  background-color: #c4c4c4;
+  background-color: var(--scrollBarThumb);
   border-radius: 10px;
 }
 
 .chat::-webkit-scrollbar-thumb:hover {
-  background-color: #cdcdcd;
+  background-color: var(--scrollBarThumbHover);
 }
 
 .questionContainer {
@@ -95,8 +95,8 @@ app-sidebar-collapse-button {
   max-width: 70%;
   width: fit-content;
   height: fit-content;
-  background-color: #d4e9ff;
-  color: #003b79;
+  background-color: var(--questionBackground);
+  color: var(--questionText);
   border-radius: 25px;
   padding: 10px 20px;
   font-size: 16px;
@@ -109,13 +109,21 @@ app-sidebar-collapse-button {
   margin-top: 20px;
   width: var(--width);
   height: fit-content;
-  border: 1px solid #f4f4f4;
-  border-radius: 20px;
+  border: 1px solid var(--responseBorder);
+  background-color: var(--responseBackground);
+  color: var(--responseText);
+  border-radius: 25px;
   padding: 15px 20px;
   font-size: 16px;
   line-height: 29px;
   box-sizing: border-box;
   word-break: break-word;
+}
+
+.think {
+  font-style: italic;
+  color: var(--responseText);
+  opacity: 0.45;
 }
 
 .interruptedMessage {
@@ -124,11 +132,11 @@ app-sidebar-collapse-button {
   align-items: center;
   font-size: 16px;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.3392156863);
+  color: var(--interrupted);
 }
 
 .modelName {
-  color: #025dbd;
+  color: var(--modelName);
   opacity: 0.8;
 }
 
@@ -154,6 +162,15 @@ app-sidebar-collapse-button {
   padding: 0;
 }
 
+.messageAttachmentsContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.attachmentsContainer::-webkit-scrollbar-thumb {
+  background-color: var(--scrollBarThumb) !important;
+  border-radius: 10px;
+}
+
 .messageAttachment {
   bottom: 0px;
 }
@@ -169,15 +186,15 @@ app-sidebar-collapse-button {
 .scrollDownButton {
   padding: 6px;
   border-radius: 100px;
-  background-color: #ffffff;
-  border: 0.5px solid #c4c4c4;
+  background-color: var(--scrollDownButtonBackground);
+  border: 0.5px solid var(--scrollDownButtonBorder);
+  color: var(--scrollDownButtonColor);
   box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.125);
   transition: all 0.1s ease-in-out;
-  transform: scale(1);
 }
 
 .scrollDownButton:hover {
-  background-color: #f4f4f4;
+  background-color: var(--scrollDownButtonHover);
   cursor: pointer;
 }
 
@@ -195,11 +212,7 @@ app-sidebar-collapse-button {
   width: var(--width);
   height: 20px;
   bottom: 20px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 1) 100%
-  );
+  background: var(--gradient);
 }
 
 .skeletonResponse {
@@ -223,17 +236,17 @@ app-sidebar-collapse-button {
     transform: translateX(-100%);
     background-image: linear-gradient(
       90deg,
-      rgba(rgba(212, 233, 255), 0) 0%,
-      rgba(rgba(212, 233, 255), 0.5) 10%,
-      rgba(rgba(212, 233, 255), 0.5) 20%,
-      rgba(rgba(212, 233, 255), 0.75) 30%,
-      rgba(rgba(212, 233, 255), 1) 40%,
-      rgba(rgba(212, 233, 255), 1) 50%,
-      rgba(rgba(212, 233, 255), 1) 60%,
-      rgba(rgba(212, 233, 255), 0.75) 70%,
-      rgba(rgba(212, 233, 255), 0.5) 80%,
-      rgba(rgba(212, 233, 255), 0.5) 90%,
-      rgba(rgba(212, 233, 255), 0) 100%
+      rgba(var(--skeletonGradient), 0) 0%,
+      rgba(var(--skeletonGradient), 0.5) 10%,
+      rgba(var(--skeletonGradient), 0.5) 20%,
+      rgba(var(--skeletonGradient), 0.75) 30%,
+      rgba(var(--skeletonGradient), 1) 40%,
+      rgba(var(--skeletonGradient), 1) 50%,
+      rgba(var(--skeletonGradient), 1) 60%,
+      rgba(var(--skeletonGradient), 0.75) 70%,
+      rgba(var(--skeletonGradient), 0.5) 80%,
+      rgba(var(--skeletonGradient), 0.5) 90%,
+      rgba(var(--skeletonGradient), 0) 100%
     );
     animation: shimmer 1.2s infinite;
     animation-timing-function: cubic-bezier(0.74, -0.01, 0.26, 1.04);

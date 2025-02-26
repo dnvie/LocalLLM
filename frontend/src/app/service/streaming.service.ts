@@ -58,7 +58,7 @@ export class StreamingService {
 
   private saveMessageToSession(message: Message, chatID: string) {
     if (this.messageSaved) return;
-    
+
     var existingMessages: Message[] = JSON.parse(
       sessionStorage.getItem(chatID) || "[]",
     );
@@ -140,7 +140,10 @@ export class StreamingService {
         ...currentMessage,
         isGenerating: false,
         isResponding: false,
+        isThinking: false,
       });
+
+      this.saveMessageToSession(currentMessage.message, currentMessage.chatID);
 
       try {
         await this.chatService.saveInterruptedMessage(
@@ -172,15 +175,17 @@ export class StreamingService {
         model: selectedModel,
         role: "assistant",
         content: "",
+        thinking: "",
         interrupted: false,
       },
       isGenerating: true,
       isResponding: true,
+      isThinking: false,
     };
 
     this.streamingMessage.next(streamingMessage);
 
-    this.streamText(selectedModel, queryText, images, attachment_name, attachment_type, chatId, files.map(file => file.file), files.map(file => file.name), files.map(file => file.type)).subscribe({
+    this.streamText(streamingMessage, selectedModel, queryText, images, attachment_name, attachment_type, chatId, files.map(file => file.file), files.map(file => file.name), files.map(file => file.type)).subscribe({
       next: ({ chatID, chunk }) => {
         if (this.router.url === "/chat/new") {
           this.router.navigate([`/chat/${chatID}`]);
@@ -193,7 +198,12 @@ export class StreamingService {
         }
         streamingMessage.isGenerating = false;
         streamingMessage.chatID = chatID!;
-        streamingMessage.message.content += chunk;
+
+        if (streamingMessage.isThinking) {
+          streamingMessage.message.thinking += chunk;
+        } else {
+          streamingMessage.message.content += chunk;
+        }
         if (this.getCurrentChatID() === chatID) {
           this.triggerScrollToBottom();
         }
@@ -229,6 +239,7 @@ export class StreamingService {
         this.streamingMessage.next({
           ...streamingMessage,
           isResponding: false,
+          isThinking: false,
         });
 
         this.chatService.setIsDisabled(false);
@@ -238,6 +249,7 @@ export class StreamingService {
   }
 
   streamText(
+    streamingMessage: StreamingMessage,
     model: string,
     query: string,
     images: string[],
@@ -252,7 +264,6 @@ export class StreamingService {
       this.activeRequestController = new AbortController();
       const signal = this.activeRequestController.signal;
       const url = `${baseUrl}/chat/${model}/${chatID || "new"}`;
-      console.log(file_names, file_types)
       const body = { query, images, attachment_name, attachment_type, files, file_names, file_types};
       const encoder = new TextDecoder();
 
@@ -281,7 +292,16 @@ export class StreamingService {
                 observer.complete();
                 return;
               }
-              const chunk = encoder.decode(value, { stream: true });
+              let chunk = encoder.decode(value, { stream: true });
+    
+              if (chunk === "<think>") {
+                streamingMessage.isThinking = true;
+                chunk = "";
+              } else if (chunk === "</think>") {
+                streamingMessage.isThinking = false;
+                chunk = "";
+              }
+              
               observer.next({ chatID, chunk });
               read();
             }).catch(error => {

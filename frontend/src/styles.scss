@@ -1,15 +1,171 @@
 :root {
-  --width: 850px;
+  --width: 900px;
   font-family: 'InterVariable', sans-serif;
   font-feature-settings: 'liga' 1, 'calt' 1, 'dlig' 1, 'ss03' 1, 'cv01' 1, 'cv05' 1, 'cv06' 1;
   letter-spacing: -0.025em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
+
+  //Colors:
+  --frameBackground: #f4f4f4;
+  --contentBackground: #ffffff;
+  --questionText: #003b79;
+  --questionBackground: #daecff;
+  --responseBackground: #ffffff;
+  --responseText: #000000;
+  --responseBorder: #f3f3f3;
+  --modelName: #025dbd;
+  --interrupted: rgba(0, 0, 0, 0.25);
+  --scrollBarThumb: #c4c4c4;
+  --scrollBarThumbHover: #cdcdcd;
+  --gradient: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  --queryOuterContainerBackgorund: rgb(246, 246, 246);
+  --queryOuterContainerBorder: rgb(223, 223, 223);
+  --attachmentFrameBackground: white;
+  --attachmentFrameBorder: rgb(196, 196, 196);
+  --attachmentInfoColor: black;
+  --removeAttachmentBackground: white;
+  --attachmentImagePlaceholderBackground: #d4e9ff;
+  --attachmentImagePlaceholderColor: #003b7996;
+  --queryInputBorderBackground: #ffffff;
+  --queryInputBorderBorder: rgb(223, 223, 223);
+  --queryInputBorderBoxShadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.085);
+  --inputButtonBackground: #ffffff;
+  --inputButtonBorder: rgb(223, 223, 223);
+  --inputButtonColor: black;
+  --inputButtonHover: #f4f4f4;
+  --interruptButtonOuter: #2a2a2a;
+  --interruptButtonOuterHover: #1c1c1c;
+  --interruptButtonBackground: white;
+  --skeletonGradient: 212, 233, 255;
+  --scrollDownButtonBackground: #ffffff;
+  --scrollDownButtonBorder: #c4c4c4;
+  --scrollDownButtonColor: #000000;
+  --scrollDownButtonHover: #f4f4f4;
+
+  --modelNameHome: #025dbd;
+  --homeText: #000000;
+
+  --currentModelBackground: #ffffff;
+  --currentModelBorder: #dfdfdf;
+  --currentModelColor: black;
+  --currentModelHover: #f4f4f4;
+  --modelSizeColor: #4e4e4e;
+  --modelSizeBorder: rgb(223, 223, 223);
+  --modelSizeHover: rgb(200, 200, 200);
+  --innerModelsBorder: rgb(170, 170, 170);
+  --modelDropdownShadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.05);
+
+  --chatWrapperColor: #00000070;
+  --chatWrapperHoverBackground: #e7e7e750;
+  --chatWrapperHoverColor: #000000;
+  --menuIconBackground: #c4c4c400;
+  --menuIconHoverBackground: #c4c4c450;
+  --chatWrapperActiveBackground: #e7e7e7;
+  --chatWrapperActiveColor: #000000;
+  --menuBackground: #e7e7e7;
+  --editColor: #2f2f2f;
+  --editBorder: rgb(60, 60, 60);
+  --editBackground: #f2db9400;
+  --deleteColor: rgb(219, 16, 16);
+  --deleteBorder: rgb(219, 16, 16);
+  --deleteBackground: rgba(219, 16, 16, 0.025);
+  --chatsContainerThumb: #c4c4c430;
+
+  --codeBackground: hsl(230, 1%, 98%);
+  --codeText: hsl(230, 8%, 204%);
+  --codeTokenPunctuation: hsl(230, 8%, 24%);
+
+  --logoText: #202020
 }
 
-[data-theme="light"] {
-  --factor: 1;
+[data-theme="dark"] {
+
+  font-family: 'Inter Display', sans-serif;
+  letter-spacing: -0.005em;
+  //-webkit-font-smoothing: initial;
+  text-rendering: optimizeLegibility;
+  //-moz-osx-font-smoothing: initial;
+
+  --frameBackground: #242424;
+  --contentBackground: #191919;
+  --questionText: #ffffffba;
+  --questionBackground: #ffffff18;
+  --responseBackground: #191919;
+  --responseText: #ffffffba;
+  --responseBorder: #212121;
+  --modelName: #57bfff;
+  --interrupted: rgba(255, 255, 255, 0.25);
+  --scrollBarThumb: #2c2c2c;
+  --scrollBarThumbHover: #333333;
+  --gradient: linear-gradient(
+    180deg,
+    #19191900 0%,
+    #191919 100%
+  );
+  --queryOuterContainerBackgorund: rgb(44, 44, 44);
+  --queryOuterContainerBorder: rgb(70, 70, 70);
+  --attachmentFrameBackground: rgb(60, 60, 60);
+  --attachmentFrameBorder: rgb(100, 100, 100);
+  --attachmentInfoColor: rgba(255, 255, 255, 0.9);
+  --removeAttachmentBackground: rgb(184, 184, 184);
+  --attachmentImagePlaceholderBackground: #e1e1e1;
+  --attachmentImagePlaceholderColor: #44444496;
+  --queryInputBorderBackground: #232323;
+  --queryInputBorderBorder: rgb(68, 68, 68);
+  --queryInputBorderBoxShadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.15);
+  --inputButtonBackground: #383838;
+  --inputButtonBorder: rgb(99, 99, 99);
+  --inputButtonColor: rgb(195, 195, 195);
+  --inputButtonHover: #484848;
+  --interruptButtonOuter: #ebebeb;
+  --interruptButtonOuterHover: #d3d3d3;
+  --interruptButtonBackground: black;
+  --skeletonGradient: 38, 95, 155;
+  --scrollDownButtonBackground: #2d2d2d;
+  --scrollDownButtonBorder: #5f5f5f;
+  --scrollDownButtonColor: #ffffff;
+  --scrollDownButtonHover: #4a4a4a;
+
+  --modelNameHome: #438fdf;
+  --homeText: #ebebeb;;
+
+  --currentModelBackground: #222222;
+  --currentModelBorder: #444444;
+  --currentModelColor: #ffffffd7;
+  --currentModelHover: #313131;
+  --modelSizeColor: #858585;
+  --modelSizeBorder: rgb(88, 88, 88);
+  --modelSizeHover: rgb(200, 200, 200);
+  --innerModelsBorder: rgb(107, 107, 107);
+  --modelDropdownShadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.2);
+
+  --chatWrapperColor: #ffffff70;
+  --chatWrapperHoverBackground: #45454529;
+  --chatWrapperHoverColor: #ffffff;
+  --menuIconBackground: #c4c4c400;
+  --menuIconHoverBackground: #61616150;
+  --chatWrapperActiveBackground: #313131;
+  --chatWrapperActiveColor: #ffffff;
+  --menuBackground: #313131;
+  --editColor: #f2da94;
+  --editBorder: #f2da94;
+  --editBackground: #f2db9418;
+  --deleteColor: rgb(248, 74, 74);
+  --deleteBorder: rgb(248, 74, 74);
+  --deleteBackground: rgba(248, 74, 74, 0.1);
+  --chatsContainerThumb: #5a5a5a30;
+
+  --codeBackground: hsl(0, 0%, 8%);
+  --codeText: hsl(0, 0%, 88%);
+  --codeTokenPunctuation: hsl(240, 3%, 55%);
+
+  --logoText: red;
 }
 
 @font-face {
@@ -23,7 +179,7 @@
 }
 
 * {
-  -webkit-font-smoothing: antialiased;
+  //-webkit-font-smoothing: antialiased;
 }
 
 body {
@@ -62,8 +218,9 @@ code {
 }
 
 .markdown-clipboard-button {
-  background-color: #ffffff;
-  border: 0.5px solid #dfdfdf;
+  background-color: var(--contentBackground);
+  border: 0.5px solid var(--currentModelBorder);
+  color: var(--responseText);
   border-radius: 10px;
   padding: 6px 10px;
   font-family: "Inter Display";
@@ -73,12 +230,16 @@ code {
 }
 
 .markdown-clipboard-button:hover {
-  background-color: #f4f4f4;
+  background-color: var(--frameBackground);
   cursor: pointer;
 }
 
 .tr {
   transition: all 0.15s cubic-bezier(0.74, -0.01, 0.26, 1.04);
+}
+
+.svgText {
+  color: red;
 }
 
 // Styles shared for chat and home components
@@ -88,8 +249,8 @@ code {
   height: fit-content;
   border-radius: 29px;
   padding: 4px;
-  border: 0.5px solid rgb(223, 223, 223);
-  background-color: rgb(246, 246, 246);
+  border: 0.5px solid var(--queryOuterContainerBorder);
+  background-color: var(--queryOuterContainerBackgorund);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -118,11 +279,12 @@ code {
   width: fit-content;
   height: fit-content;
   padding: 6px;
-  border: 0.5px solid rgb(196, 196, 196);
-  background-color: white;
+  border: 0.5px solid var(--attachmentFrameBorder);
+  background-color: var(--attachmentFrameBackground);
   border-radius: 16px;
   display: flex;
   gap: 10px;
+  color: var(--attachmentInfoColor)
 }
 
 .attachmentInfo {
@@ -151,7 +313,8 @@ code {
   height: 16px;
   border-radius: 99px;
   position: absolute;
-  background-color: white;
+  background-color: var(--removeAttachmentBackground);
+  color: black;
   border: 0.5px solid rgb(196, 196, 196);
   right: -3px;
   top: -3px;
@@ -197,8 +360,8 @@ code {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background-color: #d4e9ff;
-  color: #003b7996;
+  background-color: var(--attachmentImagePlaceholderBackground);
+  color: var(--attachmentImagePlaceholderColor);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -214,11 +377,11 @@ code {
 .queryInputBorder {
   border-radius: 29px;
   padding: 5px 5px 5px 5px;
-  border: 0.5px solid rgb(223, 223, 223);
+  border: 0.5px solid var(--queryInputBorderBorder);
   text-decoration: none;
   border-radius: 25px;
-  background-color: #ffffff;
-  box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.085);
+  background-color: var(--queryInputBorderBackground);
+  box-shadow: var(--queryInputBorderBoxShadow);
 }
 
 .inputBorderContainer {
@@ -240,9 +403,10 @@ code {
   border-radius: 12px;
   font-size: 16px;
   font-weight: 400;
-  border: 0.5px solid rgb(223, 223, 223);
+  border: 0.5px solid var(--inputButtonBorder);
   border-radius: 25px;
-  background-color: #ffffff;
+  background-color: var(--inputButtonBackground);
+  color: var(--inputButtonColor);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -251,7 +415,7 @@ code {
 
 .inputButton:hover {
   cursor: pointer;
-  background-color: #f4f4f4;
+  background-color: var(--inputButtonHover);
 }
 
 .inputButton.disabled {
@@ -280,7 +444,7 @@ code {
   height: 35px;
   width: 35px;
   border-radius: 999px;
-  background-color: #2a2a2a;
+  background-color: var(--interruptButtonOuter);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -291,7 +455,7 @@ code {
 
 .interruptButtonOuter:hover {
   cursor: pointer;
-  background-color: #1c1c1c;
+  background-color: var(--interruptButtonOuterHover);
 }
 
 .interruptButtonOuter.disabled {
@@ -304,11 +468,11 @@ code {
   height: 12px;
   width: 12px;
   border-radius: 2px;
-  background-color: white;
+  background-color: var(--interruptButtonBackground);
 }
 
 .sendButton {
-  color: white;
+  color: var(--inputButtonBackground);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -351,6 +515,8 @@ input[type="file"].disabled {
 }
 
 textarea {
+  background-color: var(--queryInputBorderBackground);
+  color: var(--responseText);
   resize: none;
   border-radius: 10px;
   font-family: InterVariable, sans-serif;

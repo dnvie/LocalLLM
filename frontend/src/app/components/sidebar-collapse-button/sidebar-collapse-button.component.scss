@@ -1,7 +1,8 @@
 .sidebarCollapseContainer {
   padding: 10px 14px;
-  border: 0.5px solid #dfdfdf;
-  background-color: #ffffff;
+  border: 0.5px solid var(--currentModelBorder);
+  background-color: var(--currentModelBackground);
+  color: var(--currentModelColor);
   border-radius: 15px;
 }
 
@@ -12,6 +13,6 @@
 }
 
 .sidebarCollapseContainer:hover {
-  background-color: #f4f4f4;
+  background-color: var(--currentModelHover);
   cursor: pointer;
 }

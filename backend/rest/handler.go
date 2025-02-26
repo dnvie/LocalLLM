@@ -4,6 +4,7 @@ import (
 	"LocalLLM/data"
 	"LocalLLM/service"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -15,6 +16,7 @@ func GetModels(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	modelsJSON, err := json.Marshal(data.ModelsList)
 	if err != nil {
+		log.Println("Error: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -27,11 +29,13 @@ func GetChats(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "id")
 	chats, err := service.QueryChatsFromUser(userID)
 	if err != nil {
+		log.Println("Error: ", err)
 		http.Error(w, "Error processing chat", http.StatusInternalServerError)
 		return
 	}
 	chatsJSON, err := json.Marshal(chats)
 	if err != nil {
+		log.Println("Error: ", err)
 		http.Error(w, "Error processing chat", http.StatusInternalServerError)
 		return
 	}
@@ -44,11 +48,13 @@ func GetChat(w http.ResponseWriter, r *http.Request) {
 	chatID := chi.URLParam(r, "id")
 	messages, err := service.QueryMessagesFromChat(chatID)
 	if err != nil {
+		log.Println("Error: ", err)
 		http.Error(w, "Error processing chat", http.StatusInternalServerError)
 		return
 	}
 	messagesJSON, err := json.Marshal(messages)
 	if err != nil {
+		log.Println("Error: ", err)
 		http.Error(w, "Error processing chat", http.StatusInternalServerError)
 		return
 	}
@@ -108,6 +114,7 @@ func ProcessChat(w http.ResponseWriter, r *http.Request) {
 	//Decoding the request body
 	var req data.QueryRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		log.Println("Error: ", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -129,6 +136,7 @@ func ProcessChat(w http.ResponseWriter, r *http.Request) {
 		chatID = uuid.New().String()
 		err := data.InsertChat(chatID, "91a91610-7998-47e2-bbcb-e6fa98d3478d", string(runes))
 		if err != nil {
+			log.Println("Error: ", err)
 			http.Error(w, "Error processing chat", http.StatusInternalServerError)
 			return
 		}
@@ -138,6 +146,7 @@ func ProcessChat(w http.ResponseWriter, r *http.Request) {
 
 	if len(req.Files) > 0 {
 		if err := data.CreateAndAddEmbedding(chatID, req.Files, req.FileNames, req.FileTypes); err != nil {
+			log.Println("Error: ", err)
 			http.Error(w, "Error processing chat", http.StatusInternalServerError)
 			return
 		} else {
@@ -149,8 +158,9 @@ func ProcessChat(w http.ResponseWriter, r *http.Request) {
 	img := service.GenerateThumbnail(req.Images)
 
 	// Insert the user message into the database
-	err := data.InsertMessage(chatID, "user", req.Query, modelName, img, req.AttachmentName, req.AttachmentType, req.FileNames, req.FileTypes, false)
+	err := data.InsertMessage(chatID, "user", req.Query, "", modelName, img, req.AttachmentName, req.AttachmentType, req.FileNames, req.FileTypes, false)
 	if err != nil {
+		log.Println("Error: ", err)
 		http.Error(w, "Error processing chat", http.StatusInternalServerError)
 		return
 	}
@@ -158,6 +168,7 @@ func ProcessChat(w http.ResponseWriter, r *http.Request) {
 	// Retrieve all messages sent in this chat (including the current query that was just stored)
 	messages, err := data.QueryMessagesFromChatWithoutImages(chatID)
 	if err != nil {
+		log.Println("Error: ", err)
 		http.Error(w, "Error processing chat", http.StatusInternalServerError)
 		return
 	}
@@ -197,6 +208,7 @@ func ProcessChat(w http.ResponseWriter, r *http.Request) {
 	// Call the QueryLLMChat method in the service package to process the chat
 	err = service.QueryLLMChat(w, requestData, chatID)
 	if err != nil {
+		log.Println("Error: ", err)
 		http.Error(w, "Error processing chat", http.StatusInternalServerError)
 		return
 	}

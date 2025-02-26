@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
-import { NavigationStart, Router } from "@angular/router";
+import { Router } from "@angular/router";
 import { Chats } from "../../data/chat";
 import { ChatService } from "../../service/chat.service";
 import { QueryList, ViewChildren } from "@angular/core";
@@ -33,6 +33,16 @@ export class SidebarComponent implements OnInit, AfterViewInit {
         this.setActiveChatFromRoute();
       }
     });
+  }
+
+  switchTheme() {
+    if (document.documentElement.getAttribute('data-theme') == 'dark') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.getElementById('logoSource')?.setAttribute('src', 'assets/logoGreyLightMode.svg');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.getElementById('logoSource')?.setAttribute('src', 'assets/logoGreyDarkMode.svg');
+    }
   }
 
   goToChat(id: string) {

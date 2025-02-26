@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"errors"
+	"log"
 	"runtime"
 	"strconv"
 	"strings"
@@ -13,12 +14,14 @@ import (
 func InitVectorDB() {
 	VectorDb, err := chromem.NewPersistentDB("./data", false)
 	if err != nil {
+		log.Println("Error: ", err)
 		panic(err)
 	}
 
 	// Using the id of the default user as a collection id for now.
 	Collection, err = VectorDb.GetOrCreateCollection("91a91610-7998-47e2-bbcb-e6fa98d3478d", nil, chromem.NewEmbeddingFuncOllama(EmbeddingModel, OLLAMA_SERVER+"/api"))
 	if err != nil {
+		log.Println("Error: ", err)
 		panic(err)
 	}
 }
@@ -49,6 +52,7 @@ func CreateAndAddEmbedding(chatID string, files, fileNames, fileTypes []string) 
 
 	err := Collection.AddDocuments(ctx, docs, runtime.NumCPU())
 	if err != nil {
+		log.Println("Error: ", err)
 		return err
 	}
 	return nil
@@ -71,6 +75,7 @@ func QueryVectorDb(chatID, query string) []string {
 	}
 	results, err := Collection.QueryWithOptions(ctx, options)
 	if err != nil {
+		log.Println("Error: ", err)
 		return nil
 	}
 	var resultsText []string

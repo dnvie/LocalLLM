@@ -23,8 +23,9 @@
 .currentModel {
   width: fit-content;
   padding: 10px 14px;
-  border: 0.5px solid #dfdfdf;
-  background-color: #ffffff;
+  border: 0.5px solid var(--currentModelBorder);
+  background-color: var(--currentModelBackground);
+  color: var(--currentModelColor);
   border-radius: 15px;
   display: flex;
   align-items: center;
@@ -38,18 +39,18 @@
 
 .currentModel:hover {
   cursor: pointer;
-  background-color: #f4f4f4;
+  background-color: var(--currentModelHover);
   .modelSize {
-    border: 0.5px solid rgb(200, 200, 200);
+    border: 0.5px solid var(--innerModelsBorder);
   }
 }
 
 .modelSize {
   font-family: "DM Mono";
   font-size: 13px;
-  color: #4e4e4e;
+  color: var(--modelSizeColor);
   background-color: transparent;
-  border: 0.5px solid rgb(223, 223, 223);
+  border: 0.5px solid var(--modelSizeBorder);
   padding: 1px 7px;
   border-radius: 6px;
   font-weight: 500;
@@ -58,17 +59,11 @@
   align-items: center;
 }
 
-.modelSizeSelected {
-  background-color: #d4e9ff;
-  color: #003b79;
-  border: none;
-}
-
 .modelQuantization {
   opacity: 0.65;
-  color: #4e4e4e;
+  color: var(--modelSizeColor);
   background-color: transparent;
-  border: 0.5px solid rgb(223, 223, 223);
+  border: 0.5px solid var(--modelSizeBorder);
 }
 
 .downCaret {
@@ -83,7 +78,7 @@
 
 .modelDropdown {
   padding: 10px 10px;
-  border: 0.5px solid #dfdfdf;
+  border: 0.5px solid var(--currentModelBorder);
   border-radius: 15px;
   display: flex;
   flex-direction: column;
@@ -91,11 +86,11 @@
   opacity: 1;
   user-select: initial;
   pointer-events: initial;
-  background-color: #ffffff;
+  background-color: var(--currentModelBackground);
   max-height: 80vh;
   overflow-y: auto;
   min-width: 250px;
-  box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--modelDropdownShadow);
 }
 
 #modelDropdown.inactive {
@@ -118,6 +113,7 @@
   padding: 8px 8px;
   border-radius: 10px;
   user-select: none;
+  color: var(--currentModelColor);
 }
 
 .modelTags {
@@ -128,16 +124,11 @@
   justify-content: center;
 }
 
-.model.active {
-  background-color: #f4f4f4;
-  font-weight: 500;
-}
-
 .model:hover {
-  background-color: #f4f4f4;
+  background-color: var(--currentModelHover);
   cursor: pointer;
   .modelSize {
-    border: 0.5px solid rgb(200, 200, 200);
+    border: 0.5px solid var(--innerModelsBorder);
   }
 }
 
@@ -153,18 +144,19 @@
   padding: 8px 8px;
   border-radius: 10px;
   user-select: none;
+  color: var(--currentModelColor);
 }
 
 .modelCategory:hover {
-  .modelSize {
+  .modelSize:hover {
     color: #4e4e4e;
-    border: 0.5px solid rgb(200, 200, 200);
+    border: 0.5px solid var(--innerModelsBorder);
   }
-  .modelQuantization {
+  .modelQuantization:hover {
     color: #4e4e4e;
-    border: 0.5px solid rgb(200, 200, 200);
+    border: 0.5px solid var(--innerModelsBorder);
   }
-  background-color: #f4f4f4;
+  background-color: var(--currentModelHover);
   cursor: pointer;
 }
 
@@ -180,14 +172,14 @@
     color: transparent;
   }
   .model:hover {
-    background-color: #ededed;
+    background-color: var(--currentModelHover);
     .modelSize {
-      color: #4e4e4e;
-      border: 0.5px solid rgb(170, 170, 170);
+      color: var(--modelSizeColor);
+      border: 0.5px solid var(--innerModelsBorder);
     }
     .modelQuantization {
-      color: #4e4e4e;
-      border: 0.5px solid rgb(170, 170, 170);
+      color: var(--modelSizeColor);
+      border: 0.5px solid var(--innerModelsBorder);
     }
   }
 }

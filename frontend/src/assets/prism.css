@@ -37,8 +37,8 @@ div.code-toolbar{position:relative}div.code-toolbar>.toolbar{position:absolute;z
 
 code[class*="language-"],
 pre[class*="language-"] {
-  background: hsl(230, 1%, 98%);
-  color: hsl(230, 8%, 24%);
+  background: var(--codeBackground);
+  color: var(--codeColor);
   font-family: "Akkurat-Mono", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono",
     monospace;
   direction: ltr;
@@ -95,7 +95,7 @@ pre[class*="language-"] {
 .token.doctype,
 .token.punctuation,
 .token.entity {
-  color: hsl(230, 8%, 24%);
+  color: var(--codeTokenPunctuation);
 }
 
 .token.attr-name,
@@ -270,8 +270,8 @@ div.code-toolbar > .toolbar.toolbar > .toolbar-item {
 div.code-toolbar > .toolbar.toolbar > .toolbar-item > button,
 div.code-toolbar > .toolbar.toolbar > .toolbar-item > a,
 div.code-toolbar > .toolbar.toolbar > .toolbar-item > span {
-  background-color: #f4f4f4;
-  color: #000000;
+  background-color: var(--questionBackground);
+  color: var(--questionText);
   padding: 0.1em 0.4em;
   border-radius: 0.3em;
 }
@@ -282,8 +282,7 @@ div.code-toolbar > .toolbar.toolbar > .toolbar-item > a:hover,
 div.code-toolbar > .toolbar.toolbar > .toolbar-item > a:focus,
 div.code-toolbar > .toolbar.toolbar > .toolbar-item > span:hover,
 div.code-toolbar > .toolbar.toolbar > .toolbar-item > span:focus {
-  background: hsl(230, 1%, 78%); /* custom: darken(--syntax-bg, 20%) */
-  color: hsl(230, 8%, 24%);
+  cursor: default;
 }
 
 /* Line Highlight plugin overrides */
