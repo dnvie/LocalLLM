@@ -209,7 +209,7 @@ app-sidebar-collapse-button {
 
 .gradient {
   position: relative;
-  width: var(--width);
+  width: calc(var(--width) + 20px);
   height: 20px;
   bottom: 20px;
   background: var(--gradient);

@@ -1,6 +1,6 @@
 <div class="container">
   <div class="modelContainer">
-      <div class="currentModel tr" (click)="toggleModelSelector()">
+      <div class="currentModel" (click)="toggleModelSelector()">
       {{ selectedModel!.name_trimmed }}
       @if (isListExpanded) {
         <span class="modelQuantization modelSize tr"> {{ selectedModel!.details.quantization_level }}</span>

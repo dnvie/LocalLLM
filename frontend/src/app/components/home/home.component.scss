@@ -94,13 +94,13 @@ app-sidebar-collapse-button {
 .unrevealed {
   opacity: 0 !important;
   transform: translateY(5px) rotate(1deg) !important;
-  transition: all 0s cubic-bezier(0.74, -0.01, 0.26, 1.04);
+  transition: all 0.1s cubic-bezier(0.74, -0.01, 0.26, 1.04);
 }
 
 .unrevealed2 {
   opacity: 0 !important;
   transform: translateY(10px) !important;
-  transition: all 0s cubic-bezier(0.74, -0.01, 0.26, 1.04);
+  transition: all 0.1s cubic-bezier(0.74, -0.01, 0.26, 1.04);
 }
 
 .rvItem {

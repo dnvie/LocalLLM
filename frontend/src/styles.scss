@@ -114,8 +114,8 @@
   --attachmentFrameBorder: rgb(100, 100, 100);
   --attachmentInfoColor: rgba(255, 255, 255, 0.9);
   --removeAttachmentBackground: rgb(184, 184, 184);
-  --attachmentImagePlaceholderBackground: #e1e1e1;
-  --attachmentImagePlaceholderColor: #44444496;
+  --attachmentImagePlaceholderBackground: #a0a0a0;
+  --attachmentImagePlaceholderColor: #00000096;
   --queryInputBorderBackground: #232323;
   --queryInputBorderBorder: rgb(68, 68, 68);
   --queryInputBorderBoxShadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.15);
@@ -515,7 +515,7 @@ input[type="file"].disabled {
 }
 
 textarea {
-  background-color: var(--queryInputBorderBackground);
+  background-color: transparent;
   color: var(--responseText);
   resize: none;
   border-radius: 10px;
