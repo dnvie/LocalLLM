@@ -39,13 +39,14 @@ Run the frontend with `ng serve` while in the /frontend/src directory.
 This is an early version and a work in progress!
 
 Planned features:
-- Ability to upload files
+- ~~Ability to upload files~~ Done.
 - User system
-- Vector database for embeddings
+- ~~Vector database for embeddings~~ Done.
 - Ability to pull new models directly from within the UI
 - Ability to set a default model
 - Temporary Chats
 - Add a lightweight LLM to generate chat titles
 - Support for various screen sizes
-- Dark Mode
+- ~~Dark Mode~~ Done.
+- Add ability to search the web
 - etc...
